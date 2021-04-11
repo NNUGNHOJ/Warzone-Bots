@@ -34,5 +34,5 @@ class Controller:
 
     def choose_moves(self, map):
         """Takes in a game state and chooses moves to make."""
-        moves = self.algorithm.choose_moves(map, self.colour, self.owned_countries, self.reinf_card_count)
+        moves = self.algorithm.choose_moves(map, self.colour, self.owned_countries)
         return moves
