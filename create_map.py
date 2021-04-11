@@ -1,22 +1,9 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 
-regions_dict = {'North America': ['Alaska', 'Northwest territory', 'Greenland', 'Alberta',
-                                  'Ontario', 'Quebec', 'Western United States',
-                                  'Eastern United States', 'Mexico'],
-                'South America': ['Venezuela', 'Brazil', 'Peru', 'Argentina'],
-                'Africa': ['North Africa', 'Egypt', 'East Africa',
-                           'Congo', 'South Africa', 'Madagascar'],
-                'Europe': ['Iceland', 'Scandinavia', 'Ukraine', 'Northern Europe',
-                           'Western Europe', 'Southern Europe', 'Great Britain'],
-                'Asia': ['Ural', 'Siberia', 'Yakutsk', 'Kamchatka', 'Japan',
-                         'Irkutsk', 'Kazakhstan', 'Middle East', 'India', 'Siam',
-                         'China', 'Mongolia'],
-                'Oceania': ['Indonesia', 'New Guinea', 'Eastern Australia',
-                            'Western Australia']}
 
 def create_graph(print):
-    """Creates a network for the game map and returns thw graph. When print is True,
+    """Creates a network for the game map and returns the graph. When print is True,
     it will print off the network with colours representing the regions."""
 
     G = nx.Graph()
@@ -185,5 +172,4 @@ def create_graph(print):
         plt.show()
 
     return G
-
 
