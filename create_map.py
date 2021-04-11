@@ -9,7 +9,7 @@ def create_graph(print):
     G = nx.Graph()
 
     #North America
-    G.add_node('Alaska', region='North America', pos=(0.5, 8.5))
+    G.add_node('Alaska', region='North America', pos=(0.5, 9))
     G.add_node('Northwest territory', region='North America', pos=(3.5, 8.5))
     G.add_node('Greenland', region='North America', pos=(7.1, 10.5))
     G.add_node('Alberta', region='North America', pos=(3, 7.5))
@@ -97,7 +97,7 @@ def create_graph(print):
     G.add_node('Ural', region='Asia', pos=(11.5, 8))
     G.add_node('Siberia', region='Asia', pos=(12.9, 8.4))
     G.add_node('Yakutsk', region='Asia', pos=(14.3, 8.5))
-    G.add_node('Kamchatka', region='Asia', pos=(16.1, 8.5))
+    G.add_node('Kamchatka', region='Asia', pos=(16.1, 9))
     G.add_node('Japan', region='Asia', pos=(15, 6))
     G.add_node('Mongolia', region='Asia', pos=(14, 6.5))
     G.add_node('Irkutsk', region='Asia', pos=(13.6, 7.7))
