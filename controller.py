@@ -5,11 +5,11 @@ class Controller:
     """A controller object represents a single player, with a
     pre-defined colour and algorithm (e.g. MCTS, RHEA, etc...)"""
 
-    owned_countries = {} # {'country_name': army count in this country}
-    reinf_card_count = 0
-
     def __init__(self, colour, algorithm):
         self.colour = colour
+        self.owned_countries = {}  # {'country_name': army count in this country}
+        self.reinf_card_count = 0
+
         if algorithm == 'Random':
             self.algorithm = random_agent.Random_agent(colour)
         else:
@@ -21,7 +21,10 @@ class Controller:
     def get_algorithm(self):
         return self.algorithm
 
-    def add_owned_county(self, country, armies):
+    def get_owned_countries(self):
+        return self.owned_countries
+
+    def add_owned_country(self, country, armies):
         """Adds a country to the dict of coutnries owned by this player"""
         self.owned_countries[str(country)] = armies
 
@@ -31,4 +34,5 @@ class Controller:
 
     def choose_moves(self, map):
         """Takes in a game state and chooses moves to make."""
-        self.algorithm.choose_moves(map, self.colour, self.owned_countries, self.reinf_card_count)
+        moves = self.algorithm.choose_moves(map, self.colour, self.owned_countries, self.reinf_card_count)
+        return moves
