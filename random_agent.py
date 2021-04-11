@@ -9,7 +9,6 @@ class Random_agent:
     def get_possible_moves(self, owned_countries, map):
         """Get all the possible moves the agent could make"""
         current_owned_countries = owned_countries
-        neighbouring_countries = []
         possible_moves = []
 
         for country in list(current_owned_countries.keys()):
@@ -28,7 +27,6 @@ class Random_agent:
         country_to_be_altered = move[0]
         armies_to_deduct = move[2]
         current_owned_countries[str(country_to_be_altered)] -= armies_to_deduct
-        print(current_owned_countries[str(country_to_be_altered)])
         return current_owned_countries
 
     def assign_new_armies_to_countries(self, armies, owned_countries, reinf_card_count):
