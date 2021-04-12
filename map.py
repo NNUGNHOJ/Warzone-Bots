@@ -21,6 +21,9 @@ class Map:
                     'Oceania': ['Indonesia', 'New Guinea', 'Eastern Australia',
                                 'Western Australia']}
 
+    regions_bonus_dict = {'North America': 5, 'South America': 2, 'Africa': 3,
+                    'Europe': 5, 'Asia': 7, 'Oceania': 2}
+
     def __init__(self):
         self.map_graph = create_map.create_graph(False)
         self.colours = {
@@ -51,6 +54,10 @@ class Map:
     def get_colours_dict(self):
         """Return a dict with the countries and their colours"""
         return self.colours
+
+    def get_bonus_dict(self):
+        """Returns dict with the bonus armies from each region"""
+        return self.regions_bonus_dict
 
     def get_random_country(self):
         """Return countries on the map"""

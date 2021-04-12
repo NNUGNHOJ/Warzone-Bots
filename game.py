@@ -79,6 +79,28 @@ class Game:
         """Takes a single move and performs it on the map graph"""
         #TODO: actually make a move on the map
 
+    def total_armies_to_allocate(self, player, reinf_cards_played):
+        """Works out how many armies a player has to allocate in this turn. This
+        includes playing reinforcements cards, or owning entire regions. Each turn
+        automatically gives the players 5 resources."""
+        total_armies = 5
+        total_armies += reinf_cards_played * 4
+        region_dict = self.map_graph.regions_dict
+        countries_owned_by_player = player.get_owned_countries()
+
+        for region in region_dict.keys():
+            total_countries_in_region = len(region)
+            player_countries_count_in_region = 0
+            for country in region:
+                if str(country) in countries_owned_by_player.keys():
+                    player_countries_count_in_region += 1
+            """If the player owns all the countries in a region, they get a bonus"""
+            if player_countries_count_in_region == total_countries_in_region:
+                regions_bonus_dict = self.map_graph.get_bonus_dict()
+                bonus = regions_bonus_dict[str(region)]
+                total_armies += bonus
+        return total_armies
+
     def perform_moves_in_order(self):
         """Takes an array of moves, and performs them in alternating order."""
         #TODO: we may need to balance which player's move gets made first
