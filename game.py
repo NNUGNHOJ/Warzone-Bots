@@ -57,8 +57,6 @@ class Game:
                 print('player 2 countries: ' + str(self.player2.get_owned_countries()))
                 self.map_graph.set_army_count(str(pick), 4)
                 p2_start += 1
-
-
         return
 
     def print_map(self):
@@ -72,20 +70,24 @@ class Game:
         killed some of that army. Remember: each move is made alternatively one player
         at a time."""
 
-        player1_moves = self.player1.choose_moves(self.map_graph)
-        player2_moves = self.player2.choose_moves(self.map_graph)
+        player1_moves, reinf_card_played1 = self.player1.choose_moves(self.map_graph)
+        player2_moves, reinf_card_played2 = self.player2.choose_moves(self.map_graph)
 
-        return player1_moves, player2_moves
+        return player1_moves, reinf_card_played1, player2_moves, reinf_card_played2
 
     def make_move(self, move, colour):
         """Takes a single move and performs it on the map graph"""
         #TODO: actually make a move on the map
 
-    def perform_moves_in_order(self, player1_moves, player2_moves):
+    def perform_moves_in_order(self):
         """Takes an array of moves, and performs them in alternating order."""
         #TODO: we may need to balance which player's move gets made first
 
-        player1_moves, player2_moves = self.get_moves()
+        player1_moves, reinf_card_played1, player2_moves, reinf_card_played2 = self.get_moves()
+
+        """adjust reinforcement cards played stat for both players"""
+        self.player1_reinf_cards_played += reinf_card_played1
+        self.player2_reinf_cards_played += reinf_card_played2
 
         count = 0
         player1_moves_made_count = 0
@@ -93,9 +95,9 @@ class Game:
 
         while len(player1_moves) != 0 or len(player2_moves) != 0:
             count += 1
-            if count % 2 == 0:
+            if count % 2 == 0 and len(player1_moves) != 0:
                 self.make_move(player1_moves[player1_moves_made_count], 'b')
                 player1_moves_made_count += 1
-            else:
+            elif count % 2 == 1 and len(player2_moves) != 0:
                 self.make_move(player2_moves[player2_moves_made_count], 'r')
                 player2_moves_made_count += 1

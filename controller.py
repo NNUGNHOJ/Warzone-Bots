@@ -25,14 +25,15 @@ class Controller:
         return self.owned_countries
 
     def add_owned_country(self, country, armies):
-        """Adds a country to the dict of coutnries owned by this player"""
+        """Adds a country to the dict of countries owned by this player"""
         self.owned_countries[str(country)] = armies
 
     def remove_owned_country(self, country):
-        """Removes a country to the dict of coutnries owned by this player"""
+        """Removes a country to the dict of countries owned by this player"""
         del self.owned_countries[str(country)]
 
     def choose_moves(self, map):
         """Takes in a game state and chooses moves to make."""
-        moves = self.algorithm.choose_moves(map, self.colour, self.owned_countries)
-        return moves
+        moves, reinf_card_played = self.algorithm.choose_moves(map, self.colour, self.owned_countries, self.reinf_card_count)
+        self.reinf_card_count = self.reinf_card_count - reinf_card_played
+        return moves, reinf_card_played

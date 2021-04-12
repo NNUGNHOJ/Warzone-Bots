@@ -37,12 +37,17 @@ class Random_agent:
         #TODO: assign armies randomly
         return
 
-    def choose_moves(self, map, colour, owned_countries):
+    def choose_moves(self, map, colour, owned_countries, reinf_card_count):
         """Chooses a random move based on the possible moves in the map. The moves are
         returned in the format (origin_country, destination_country, army_count)"""
         current_owned_countries = owned_countries
         neighbouring_countries = []
         chosen_moves = []
+
+        #if the agent has any reinforcement cards to play, play them all
+        if reinf_card_count > 0:
+            reinf_cards_played = reinf_card_count
+            reinf_card_count = 0
 
         """Get all the countries neighbouring owned countries"""
         for country in list(current_owned_countries.keys()):
@@ -57,7 +62,7 @@ class Random_agent:
                     current_owned_countries = self.remove_used_armies_from_pool(current_owned_countries, move)
                     chosen_moves.append(move)
 
-        return chosen_moves
+        return chosen_moves, reinf_cards_played
 
 
 
