@@ -15,3 +15,8 @@ test_game.print_map()
 #has the players each choose the set of moves they want to make
 test_game.get_moves()
 
+#perform the array of moves in alternating order
+test_game.perform_moves_in_order()
+
+#print off map
+test_game.print_map()

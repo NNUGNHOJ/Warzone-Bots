@@ -75,6 +75,9 @@ class Random_agent:
 
         return owned_countries
 
+    def consider_reinf_card(self, reinf_card_count):
+        """Random agent always plays all reinforcement card immediately"""
+        return reinf_card_count
 
 
 

@@ -55,6 +55,10 @@ class Map:
         """Return a dict with the countries and their colours"""
         return self.colours
 
+    def get_armies_dict(self):
+        """Return a dict with the countries and their army counts"""
+        return self.armies
+
     def get_bonus_dict(self):
         """Returns dict with the bonus armies from each region"""
         return self.regions_bonus_dict

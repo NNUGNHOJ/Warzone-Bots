@@ -19,8 +19,8 @@ class Game:
         self.turn_count = 0
         self.player1_territories = [2]
         self.player2_territories = [2]
-        self.player1_armies = [8]
-        self.player2_armies = [8]
+        self.player1_armies = [13]
+        self.player2_armies = [13]
         self.player1_armies_lost = [0]
         self.player2_armies_lost = [0]
         self.player1_armies_killed = [0]
@@ -70,24 +70,94 @@ class Game:
         killed some of that army. Remember: each move is made alternatively one player
         at a time."""
 
-        player1_moves, reinf_card_played1 = self.player1.choose_moves(self.map_graph)
-        player2_moves, reinf_card_played2 = self.player2.choose_moves(self.map_graph)
+        player1_moves = self.player1.choose_moves(self.map_graph)
+        player2_moves = self.player2.choose_moves(self.map_graph)
 
-        return player1_moves, reinf_card_played1, player2_moves, reinf_card_played2
+        return player1_moves, player2_moves
 
     def make_move(self, move, colour):
-        """Takes a single move and performs it on the map graph"""
-        #TODO: actually make a move on the map
+        """Takes a single move and performs it on the map graph, a move consists
+        of (origin_country, destination_country, armies_to_move)"""
 
-    def total_armies_to_allocate(self, player, reinf_cards_played):
+        #TODO: need to handle the case where the defending country is black (with 2 armies inside)
+
+        if str(colour) == 'b':
+            attacking_player = self.player1
+            defending_player = self.player2
+        else:
+            defending_player = self.player1
+            attacking_player = self.player2
+
+        """Check that the player still owns the origin_country, if it does not, 
+        then return without making the move."""
+        colours_dict = self.map_graph.get_colours_dict()
+        if colours_dict[str(move[0])] != str(colour):
+            return
+
+        """Check if the country still has all the armies the move wants to
+        utilise"""
+        armies_dict = self.map_graph.get_armies_dict()
+        """If the origin_country does not have as many armies as the move
+        requires, then just use however many armies there are left."""
+        if armies_dict[str(move[0])] >= move[2]:
+            attacking_player_armies = move[2]
+        else:
+            attacking_player_armies = armies_dict[str(move[0])]
+
+        """Count how many armies the two countries have before the move"""
+        defending_player_owned_countries = defending_player.get_owned_countries()
+        defending_player_armies = defending_player_owned_countries[str(move[1])]
+
+        for i in range(attacking_player_armies):
+            """If there are still defending armies in destination_country"""
+            if defending_player_armies > 0:
+                defender_chance = random.randint(0,100)
+                attacker_chance = random.randint(0,100)
+
+                """If both players successfully roll, nothing happens"""
+                if defender_chance <= 70 and attacker_chance <= 60:
+                    continue
+
+                """If defender successfully rolls but attacker doesnt, kill one
+                attacking army, defending army stays the same"""
+                if defender_chance <= 70 and attacker_chance > 60:
+                    attacking_player_armies = attacking_player_armies - 1
+
+                """If attacking army successfully rolls but defender doesnt, kill one
+                defending army, attacking army stays the same"""
+                if defender_chance > 70 and attacker_chance <= 60:
+                    defending_player_armies = defending_player_armies - 1
+
+            """Else there are no defending armies anymore, flip country to attacking player and
+            add the remaining armies to it"""
+            if defending_player_armies == 0:
+                attacking_player.add_owned_country(move[1], attacking_player_armies)
+                defending_player.remove_owned_country(move[1])
+
+            if defending_player_armies < 0:
+                print('Army count has gone below 0...')
+
+        """Adjust the game map to reflect the new game state after the move"""
+        self.adjust_map(self.player1.get_owned_countries(), self.player2.get_owned_countries())
+
+    def total_armies_to_allocate(self, player):
         """Works out how many armies a player has to allocate in this turn. This
         includes playing reinforcements cards, or owning entire regions. Each turn
         automatically gives the players 5 resources."""
         total_armies = 5
+        reinf_cards_played = player.consider_reinf_card(self.map_graph)
+        if player == self.player1:
+            self.player1_reinf_cards_played.append(reinf_cards_played)
+        if player == self.player2:
+            self.player2_reinf_cards_played.append(reinf_cards_played)
+
+        player.set_reinf_card_count(player.get_reinf_card_count() - reinf_cards_played)
         total_armies += reinf_cards_played * 4
+
         region_dict = self.map_graph.regions_dict
         countries_owned_by_player = player.get_owned_countries()
 
+        """Check if player owns any entire regions, allocate extra armies if they do"""
         for region in region_dict.keys():
             total_countries_in_region = len(region)
             player_countries_count_in_region = 0
@@ -99,6 +169,7 @@ class Game:
                 regions_bonus_dict = self.map_graph.get_bonus_dict()
                 bonus = regions_bonus_dict[str(region)]
                 total_armies += bonus
+
         return total_armies
 
     def adjust_map(self, player1_owned_countries, player2_owned_countries):
@@ -112,40 +183,30 @@ class Game:
             self.map_graph.set_army_count(str(country), player1_owned_countries[str(country)])
 
     def allocate_armies(self, player1_additional_armies, player2_additional_armies):
+        """Allows both players to use their allocate_armies() function to allocate
+        their armies in owned countries"""
         self.player1.allocate_armies(player1_additional_armies)
         self.player2.allocate_armies(player2_additional_armies)
         self.adjust_map(self.player1.get_owned_countries(), self.player2.get_owned_countries())
-
 
     def perform_moves_in_order(self):
         """Takes an array of moves, and performs them in alternating order. Effectively performing 1 turn"""
         #TODO: we may need to balance which player's move gets made first
 
-        """Check if players want to play any reinforcement cards"""
-
-
-        """Get list of moves to make for each player"""
-        player1_moves, reinf_card_played1, player2_moves, reinf_card_played2 = self.get_moves()
-
         """Calculate how many new armies each player gets this turn"""
-        player1_additional_armies = self.total_armies_to_allocate(self.player1, reinf_card_played1)
-        player2_additional_armies = self.total_armies_to_allocate(self.player2, reinf_card_played2)
+        player1_additional_armies = self.total_armies_to_allocate(self.player1)
+        player2_additional_armies = self.total_armies_to_allocate(self.player2)
 
         """Allow both players to allocate their new armies"""
         self.allocate_armies(player1_additional_armies, player2_additional_armies)
 
-        """Adjust the Game object's map to reflect the countries and army countrs of the players"""
+        """Adjust the Game object's map to reflect the countries and army counts of the players"""
         self.adjust_map(self.player1.get_owned_countries(), self.player2.get_owned_countries())
 
-
+        """Get list of moves to make for each player"""
+        player1_moves, player2_moves = self.get_moves()
 
         """"""
-
-        """adjust statistic for both players"""
-        self.player1_reinf_cards_played.append(reinf_card_played1)
-        self.player2_reinf_cards_played.append(reinf_card_played2)
-        self.player1_armies.append(self.player1_armies[len(self.player1_armies) - 1] + player1_additional_armies)
-        self.player2_armies.append(self.player2_armies[len(self.player2_armies) - 1] + player2_additional_armies)
 
         count = 0
         player1_moves_made_count = 0
@@ -159,3 +220,11 @@ class Game:
             elif count % 2 == 1 and len(player2_moves) != 0:
                 self.make_move(player2_moves[player2_moves_made_count], 'r')
                 player2_moves_made_count += 1
+
+        """Add any new reinforcement cards earned from this turn to the players"""
+        self.player1.set_reinf_card_count(self.player1.check_for_new_reinf_card())
+        self.player1.set_reinf_card_count(self.player2.check_for_new_reinf_card())
+
+        """adjust statistic for both players"""
+        self.player1_armies.append(self.player1_armies[len(self.player1_armies) - 1] + player1_additional_armies)
+        self.player2_armies.append(self.player2_armies[len(self.player2_armies) - 1] + player2_additional_armies)
