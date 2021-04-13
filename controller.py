@@ -37,3 +37,7 @@ class Controller:
         moves, reinf_card_played = self.algorithm.choose_moves(map, self.colour, self.owned_countries, self.reinf_card_count)
         self.reinf_card_count = self.reinf_card_count - reinf_card_played
         return moves, reinf_card_played
+
+    def allocate_armies(self, additional_armies):
+        self.owned_countries = self.algorithm.allocate_armies(additional_armies, self.owned_countries)
+

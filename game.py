@@ -10,23 +10,23 @@ class Game:
     """A single Game object is a single game, with a corresponding
     set of map states (one for each turn)"""
 
-    #game stats
-    turn_count = 0
-    player1_territories = [2]
-    player2_territories = [2]
-    player1_armies = [8]
-    player2_armies = [8]
-    player1_armies_lost = [0]
-    player2_armies_lost = [0]
-    player1_armies_killed = [0]
-    player2_armies_killed = [0]
-    player1_reinf_cards_played = [0]
-    player2_reinf_cards_played = [0]
-
     def __init__(self, player1_algorithm, player2_algorithm):
         self.map_graph = map.Map()
         self.player1 = controller.Controller('b', player1_algorithm)
         self.player2 = controller.Controller('r', player2_algorithm)
+
+        # game stats
+        self.turn_count = 0
+        self.player1_territories = [2]
+        self.player2_territories = [2]
+        self.player1_armies = [8]
+        self.player2_armies = [8]
+        self.player1_armies_lost = [0]
+        self.player2_armies_lost = [0]
+        self.player1_armies_killed = [0]
+        self.player2_armies_killed = [0]
+        self.player1_reinf_cards_played = [0]
+        self.player2_reinf_cards_played = [0]
 
     def random_starting_positions(self):
         """Picks 2 random countries for each player as starting position, and
@@ -101,15 +101,51 @@ class Game:
                 total_armies += bonus
         return total_armies
 
+    def adjust_map(self, player1_owned_countries, player2_owned_countries):
+        """Changes the map to reflect the owned countries and army counts as per the players"""
+        for country in player1_owned_countries.keys():
+            self.map_graph.change_colour(str(country), 'b')
+            self.map_graph.set_army_count(str(country), player1_owned_countries[str(country)])
+
+        for country in player2_owned_countries.keys():
+            self.map_graph.change_colour(str(country), 'r')
+            self.map_graph.set_army_count(str(country), player1_owned_countries[str(country)])
+
+    def allocate_armies(self, player1_additional_armies, player2_additional_armies):
+        self.player1.allocate_armies(player1_additional_armies)
+        self.player2.allocate_armies(player2_additional_armies)
+        self.adjust_map(self.player1.get_owned_countries(), self.player2.get_owned_countries())
+
+
     def perform_moves_in_order(self):
-        """Takes an array of moves, and performs them in alternating order."""
+        """Takes an array of moves, and performs them in alternating order. Effectively performing 1 turn"""
         #TODO: we may need to balance which player's move gets made first
 
+        """Check if players want to play any reinforcement cards"""
+
+
+        """Get list of moves to make for each player"""
         player1_moves, reinf_card_played1, player2_moves, reinf_card_played2 = self.get_moves()
 
-        """adjust reinforcement cards played stat for both players"""
-        self.player1_reinf_cards_played += reinf_card_played1
-        self.player2_reinf_cards_played += reinf_card_played2
+        """Calculate how many new armies each player gets this turn"""
+        player1_additional_armies = self.total_armies_to_allocate(self.player1, reinf_card_played1)
+        player2_additional_armies = self.total_armies_to_allocate(self.player2, reinf_card_played2)
+
+        """Allow both players to allocate their new armies"""
+        self.allocate_armies(player1_additional_armies, player2_additional_armies)
+
+        """Adjust the Game object's map to reflect the countries and army countrs of the players"""
+        self.adjust_map(self.player1.get_owned_countries(), self.player2.get_owned_countries())
+
+
+
+        """"""
+
+        """adjust statistic for both players"""
+        self.player1_reinf_cards_played.append(reinf_card_played1)
+        self.player2_reinf_cards_played.append(reinf_card_played2)
+        self.player1_armies.append(self.player1_armies[len(self.player1_armies) - 1] + player1_additional_armies)
+        self.player2_armies.append(self.player2_armies[len(self.player2_armies) - 1] + player2_additional_armies)
 
         count = 0
         player1_moves_made_count = 0

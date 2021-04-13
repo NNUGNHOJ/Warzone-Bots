@@ -65,6 +65,17 @@ class Random_agent:
 
         return chosen_moves, reinf_cards_played
 
+    def allocate_armies(self, additional_armies, owned_countries):
+        """Takes in a number of armies to be allocated, and randomly allocates
+        them to countries. The returns the owned_countries dict"""
+        while additional_armies > 0:
+            country = random.choice(owned_countries.keys())
+            owned_countries[str(country)] += 1
+            additional_armies -= 1
+
+        return owned_countries
+
+
 
 
 
