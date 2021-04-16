@@ -81,13 +81,28 @@ class Map:
         self.armies[str(country)] = army_count
         return
 
-
     def print_map(self):
         """Prints off the map"""
         colour_values = [self.colours.get(node, 0.25) for node in self.map_graph.nodes()]
         nx.draw(self.map_graph, nx.get_node_attributes(self.map_graph, 'pos'),
                 node_color=colour_values, with_labels=False, node_size=100)
         plt.show()
+
+    def get_turn_statistics(self):
+        player1_countries = []
+        player2_countries = []
+
+        for key, value in self.colours.items():
+            if value == 'b':
+                army_in_country = self.armies[str(key)]
+                player1_countries.append((str(key), army_in_country))
+
+            if value == 'r':
+                army_in_country = self.armies[str(key)]
+                player2_countries.append((str(key), army_in_country))
+
+        return player1_countries, player2_countries, self.armies.keys()
+
 
 
 

@@ -22,8 +22,9 @@ class Random_agent:
 
     def remove_used_armies_from_pool(self, current_owned_countries, move):
         """Removes armies from a country based on a move having been selected.
-        e.g. the move is (Iceland, Britain, 3) means moving 3 armies from Iceland
-        to Britain. In this case we have to remove 3 armies from Iceland"""
+        e.g. the move is (Iceland, Britain, 3) means removing 3 armies from Iceland.
+        This is not done to the actual game, but just as a temporary counter to keep
+        track of how many armies are left to play with in this particular turn"""
         country_to_be_altered = move[0]
         armies_to_deduct = move[2]
         current_owned_countries[str(country_to_be_altered)] -= armies_to_deduct
@@ -60,14 +61,14 @@ class Random_agent:
     def allocate_armies(self, additional_armies, owned_countries):
         """Takes in a number of armies to be allocated, and randomly allocates
         them to countries. The returns the owned_countries dict"""
-        print(str(self.colour) + ' owns countries: ' + str(owned_countries))
+        print(str(self.colour) + ' owns these countries: ' + str(owned_countries))
         while additional_armies > 0:
             country = random.choice(list(owned_countries.keys()))
             print('Algorithm has chosen ' + str(country) + ' to be allocated an army')
             owned_countries[str(country)] += 1
             additional_armies -= 1
 
-        print('after allocating, ' + str(self.colour) + ' owns countries: ' + str(owned_countries))
+        print('after allocating, ' + str(self.colour) + ' owns these countries: ' + str(owned_countries))
 
         return owned_countries
 
