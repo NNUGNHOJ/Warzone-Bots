@@ -39,16 +39,16 @@ class Map:
             'New Guinea': 'k', 'Eastern Australia': 'k', 'Western Australia': 'k'
         }
         self.armies = {
-            'Alaska': 0, 'Northwest territory': 0, 'Greenland': 0, 'Alberta': 0,
-            'Ontario': 0, 'Quebec': 0, 'Western United States': 0, 'Eastern United States': 0,
-            'Mexico': 0, 'Venezuela': 0, 'Brazil': 0, 'Peru': 0, 'Argentina': 0,
-            'North Africa': 0, 'Egypt': 0, 'East Africa': 0, 'Congo': 0, 'South Africa': 0,
-            'Madagascar': 0, 'Iceland': 0, 'Scandinavia': 0, 'Great Britain': 0,
-            'Northern Europe': 0, 'Western Europe': 0, 'Southern Europe': 0,
-            'Ukraine': 0, 'Ural': 0, 'Siberia': 0, 'Yakutsk': 0, 'Kamchatka': 0,
-            'Japan': 0, 'Mongolia': 0, 'Irkutsk': 0, 'China': 0, 'Siam': 0,
-            'India': 0, 'Middle East': 0, 'Kazakhstan': 0, 'Indonesia': 0,
-            'New Guinea': 0, 'Eastern Australia': 0, 'Western Australia': 0
+            'Alaska': 2, 'Northwest territory': 2, 'Greenland': 2, 'Alberta': 2,
+            'Ontario': 2, 'Quebec': 2, 'Western United States': 2, 'Eastern United States': 2,
+            'Mexico': 2, 'Venezuela': 2, 'Brazil': 2, 'Peru': 2, 'Argentina': 2,
+            'North Africa': 2, 'Egypt': 2, 'East Africa': 2, 'Congo': 2, 'South Africa': 2,
+            'Madagascar': 2, 'Iceland': 2, 'Scandinavia': 2, 'Great Britain': 2,
+            'Northern Europe': 2, 'Western Europe': 2, 'Southern Europe': 2,
+            'Ukraine': 2, 'Ural': 2, 'Siberia': 2, 'Yakutsk': 2, 'Kamchatka': 2,
+            'Japan': 2, 'Mongolia': 2, 'Irkutsk': 2, 'China': 2, 'Siam': 2,
+            'India': 2, 'Middle East': 2, 'Kazakhstan': 0, 'Indonesia': 2,
+            'New Guinea': 2, 'Eastern Australia': 2, 'Western Australia': 2
         }
 
     def get_colours_dict(self):
@@ -79,6 +79,8 @@ class Map:
     def set_army_count(self, country, army_count):
         """Changes the army count of a country"""
         self.armies[str(country)] = army_count
+        return
+
 
     def print_map(self):
         """Prints off the map"""

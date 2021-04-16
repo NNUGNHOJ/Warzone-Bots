@@ -7,13 +7,13 @@ class Random_agent:
         self.colour = colour
 
     def get_possible_moves(self, owned_countries, map):
-        """Get all the possible moves the agent could make"""
-        current_owned_countries = owned_countries
+        """Returns an array of all the possible moves the agent could make, where
+        a move is (origin_country, destination_country, armies)"""
         possible_moves = []
 
-        for country in list(current_owned_countries.keys()):
+        for country in list(owned_countries.keys()):
             current_neighbours = [n for n in map.map_graph.neighbors(country)]
-            current_armies_count = current_owned_countries[str(country)]
+            current_armies_count = owned_countries[str(country)]
             for neighbour in current_neighbours:
                 for i in range(current_armies_count):
                     possible_moves.append((str(country), str(neighbour), i + 1))
@@ -54,24 +54,28 @@ class Random_agent:
         for country in list(current_owned_countries.keys()):
             neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
 
-            possible_moves = self.get_possible_moves(owned_countries, map)
+            possible_moves = self.get_possible_moves(current_owned_countries, map)
 
             while len(possible_moves) > 0:
-                possible_moves = self.get_possible_moves(owned_countries, map)
+                possible_moves = self.get_possible_moves(current_owned_countries, map)
                 if len(possible_moves) > 0:
                     move = random.choice(possible_moves)
                     current_owned_countries = self.remove_used_armies_from_pool(current_owned_countries, move)
                     chosen_moves.append(move)
 
-        return chosen_moves, reinf_cards_played
+        return chosen_moves, reinf_cards_played, owned_countries
 
     def allocate_armies(self, additional_armies, owned_countries):
         """Takes in a number of armies to be allocated, and randomly allocates
         them to countries. The returns the owned_countries dict"""
+        print(str(self.colour) + ' owns countries: ' + str(owned_countries))
         while additional_armies > 0:
-            country = random.choice(owned_countries.keys())
+            country = random.choice(list(owned_countries.keys()))
+            print('Algorithm has chosen ' + str(country) + ' to be allocated an army')
             owned_countries[str(country)] += 1
             additional_armies -= 1
+
+        print('after allocating, ' + str(self.colour) + ' owns countries: ' + str(owned_countries))
 
         return owned_countries
 

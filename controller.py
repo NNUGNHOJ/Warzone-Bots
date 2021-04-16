@@ -58,15 +58,19 @@ class Controller:
 
     def choose_moves(self, map):
         """Takes in a game state and chooses moves to make."""
-        moves = self.algorithm.choose_moves(map, self.colour, self.owned_countries, self.reinf_card_count)
-        return moves
+        print('Using the choose_moves() function.....')
+        owned_countries_copy = self.owned_countries.copy()
+        chosen_moves, reinf_cards_played, owned_countries = self.algorithm.choose_moves(map, self.colour,
+                                                                  owned_countries_copy, self.reinf_card_count)
+        return chosen_moves, reinf_cards_played
 
     def consider_reinf_card(self, map):
         """Decide whether to play a reinforcement card or not. Returns the
-        number fo reinforcement cards being played this turn."""
+        number of reinforcement cards being played this turn."""
         reinf_cards_to_play = self.algorithm.consider_reinf_card(self.reinf_card_count)
         return reinf_cards_to_play
 
     def allocate_armies(self, additional_armies):
+        """Decide where to allocate the new armies"""
         self.owned_countries = self.algorithm.allocate_armies(additional_armies, self.owned_countries)
 
