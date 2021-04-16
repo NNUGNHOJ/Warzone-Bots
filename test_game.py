@@ -23,32 +23,39 @@ for i in range(number_of_rounds):
     map_states.append(test_game.map_graph)
     results.append(test_game.map_graph.get_turn_statistics())
 
+def print_stats():
+    """Collect statistics and plot"""
+    player1_countries = []
+    player2_countries = []
+    countries = []
+    index = []
+
+    for result in results:
+        player1_countries.append(len(result[0]))
+        player2_countries.append(len(result[1]))
+        countries.append(len(result[2]))
+
+    count = 1
+    for i in range(len(player2_countries)):
+        index.append(count)
+        count += 1
+
+    plt.plot(index, player1_countries, label="Player 1")
+    plt.plot(index, player2_countries, label="Player 2")
+    plt.xlabel('Turn')
+    plt.ylabel('Countries owned')
+    plt.title('Number of countries owned for Random vs Random')
+    plt.legend()
+    plt.show()
+
 #print off map
 test_game.print_map()
 
-"""Collect statistics and plot"""
-player1_countries = []
-player2_countries = []
-countries = []
-index = []
+#print graph
+#print_stats()
 
-for result in results:
-    player1_countries.append(len(result[0]))
-    player2_countries.append(len(result[1]))
-    countries.append(len(result[2]))
 
-count = 1
-for i in range(len(player2_countries)):
-    index.append(count)
-    count += 1
 
-plt.plot(index, player1_countries, label="Player 1")
-plt.plot(index, player2_countries, label="Player 2")
-plt.xlabel('Turn')
-plt.ylabel('Countries owned')
-plt.title('Number of countries owned for Random vs Random')
-plt.legend()
-plt.show()
 
 
 
