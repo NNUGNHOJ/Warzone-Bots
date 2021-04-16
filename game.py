@@ -165,7 +165,7 @@ class Game:
                         print(str(defending_player.get_colour()) + ' just lost an army in ' + str(move[1]))
                         print('it started with: ' + str(defending_player.get_owned_countries()))
 
-                        new_value = defending_player.get_owned_countries()[str(move[1])] - 1
+                        new_value = self.map_graph.get_armies_dict()[str(move[1])] - 1
 
                         defending_player.add_owned_country(move[1], new_value)
                         self.map_graph.set_army_count(str(move[1]), new_value)
