@@ -35,8 +35,6 @@ class Heuristic_agent:
         current_owned_countries[str(country_to_be_altered)] -= armies_to_deduct
         return current_owned_countries
 
-    def
-
     def choose_moves(self, map, colour, owned_countries, reinf_card_count):
         """Chooses a random move based on the possible moves in the map. The moves are
         returned in the format (origin_country, destination_country, army_count)"""

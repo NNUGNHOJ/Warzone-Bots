@@ -1,4 +1,5 @@
 import random_agent
+import heuristic_agent
 import math
 
 
@@ -14,6 +15,8 @@ class Controller:
 
         if algorithm == 'Random':
             self.algorithm = random_agent.Random_agent(colour)
+        if algorithm == 'Heuristic':
+            self.algorithm = heuristic_agent.Heuristic_agent(colour)
         else:
             print("Only random agent has been implemented so far...")
 
