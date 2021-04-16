@@ -1,9 +1,5 @@
 import game
 import matplotlib.pyplot as plt
-import numpy as np
-
-"""This is a test game, meaning a test of running a single game between two
-random agents. Later, we can run experiments in this way."""
 
 print('Creating the game...')
 
