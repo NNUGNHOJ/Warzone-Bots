@@ -1,14 +1,11 @@
-import create_map
 import controller
-import networkx as nx
-import matplotlib.pyplot as plt
 import random
 import map
 
 
 class Game:
-    """A single Game object is a single game, with a corresponding
-    set of map states (one for each turn)"""
+    """A single Game object is a single game, and contains a Map object,
+    and two Controller objects"""
 
     def __init__(self, player1_algorithm, player2_algorithm):
         self.map_graph = map.Map()
