@@ -29,14 +29,6 @@ class Random_agent:
         current_owned_countries[str(country_to_be_altered)] -= armies_to_deduct
         return current_owned_countries
 
-    def assign_new_armies_to_countries(self, armies, owned_countries, reinf_card_count):
-        """Before making moves, agent needs to assign all their new armies to owned coutnries.
-        If the agent has a reinforcement card, they can play it, in order to get an extra 4
-        new armies to assign. The random agent always plays the reinforcement card immediately """
-        #TODO: play reinforcement card
-        #TODO: assign armies randomly
-        return
-
     def choose_moves(self, map, colour, owned_countries, reinf_card_count):
         """Chooses a random move based on the possible moves in the map. The moves are
         returned in the format (origin_country, destination_country, army_count)"""
