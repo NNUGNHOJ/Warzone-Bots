@@ -1,15 +1,42 @@
 import random
-import map
 
 class Heuristic_agent:
     """Uses game heuristics only"""
 
     def __init__(self, colour):
         self.colour = colour
-        self.value_map = map.Map()
+        self.defend_value_map = {
+            'Alaska': 0, 'Northwest territory': 0, 'Greenland': 0, 'Alberta': 0,
+            'Ontario': 0, 'Quebec': 0, 'Western United States': 0, 'Eastern United States': 0,
+            'Mexico': 0, 'Venezuela': 0, 'Brazil': 0, 'Peru': 0, 'Argentina': 0,
+            'North Africa': 0, 'Egypt': 0, 'East Africa': 0, 'Congo': 0, 'South Africa': 0,
+            'Madagascar': 0, 'Iceland': 0, 'Scandinavia': 0, 'Great Britain': 0,
+            'Northern Europe': 0, 'Western Europe': 0, 'Southern Europe': 0,
+            'Ukraine': 0, 'Ural': 0, 'Siberia': 0, 'Yakutsk': 0, 'Kamchatka': 0,
+            'Japan': 0, 'Mongolia': 0, 'Irkutsk': 0, 'China': 0, 'Siam': 0,
+            'India': 0, 'Middle East': 0, 'Kazakhstan': 0, 'Indonesia': 0,
+            'New Guinea': 0, 'Eastern Australia': 0, 'Western Australia': 0
+        }
+        self.attack_value_map = {
+            'Alaska': 0, 'Northwest territory': 0, 'Greenland': 0, 'Alberta': 0,
+            'Ontario': 0, 'Quebec': 0, 'Western United States': 0, 'Eastern United States': 0,
+            'Mexico': 0, 'Venezuela': 0, 'Brazil': 0, 'Peru': 0, 'Argentina': 0,
+            'North Africa': 0, 'Egypt': 0, 'East Africa': 0, 'Congo': 0, 'South Africa': 0,
+            'Madagascar': 0, 'Iceland': 0, 'Scandinavia': 0, 'Great Britain': 0,
+            'Northern Europe': 0, 'Western Europe': 0, 'Southern Europe': 0,
+            'Ukraine': 0, 'Ural': 0, 'Siberia': 0, 'Yakutsk': 0, 'Kamchatka': 0,
+            'Japan': 0, 'Mongolia': 0, 'Irkutsk': 0, 'China': 0, 'Siam': 0,
+            'India': 0, 'Middle East': 0, 'Kazakhstan': 0, 'Indonesia': 0,
+            'New Guinea': 0, 'Eastern Australia': 0, 'Western Australia': 0
+        }
 
-    def fill_value_map(self):
-        """Use a Map object to define high-value countries"""
+    def fill_defend_value_map(self):
+        """Fill value map of which countries have highest priority to be defended"""
+
+    def fill_attack_value_map(self):
+        """Fill value map of which countries have highest priority to be attacked"""
+
+    """EVERYTHING UNDER HERE IS JUST RANDOM AGENT CODE...."""
 
     def get_possible_moves(self, owned_countries, map):
         """Returns an array of all the possible moves the agent could make, where

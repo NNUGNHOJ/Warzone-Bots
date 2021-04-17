@@ -18,7 +18,7 @@ class Controller:
         if algorithm == 'Heuristic':
             self.algorithm = heuristic_agent.Heuristic_agent(colour)
         else:
-            print("Only random agent has been implemented so far...")
+            print("Only Random and Heuristic agents have been implemented so far...")
 
     def get_colour(self):
         return self.colour

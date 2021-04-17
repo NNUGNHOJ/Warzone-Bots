@@ -10,7 +10,7 @@ test_game.random_starting_positions()
 player1_owned = test_game.player1.get_owned_countries()
 player2_owned = test_game.player2.get_owned_countries()
 
-number_of_rounds = 10
+number_of_rounds = 30
 map_states = []
 results = []
 
