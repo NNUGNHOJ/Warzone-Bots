@@ -32,6 +32,25 @@ class Heuristic_agent:
             'India': 0, 'Middle East': 0, 'Kazakhstan': 0, 'Indonesia': 0,
             'New Guinea': 0, 'Eastern Australia': 0, 'Western Australia': 0
         }
+        self.regions_dict = {'North America': ['Alaska', 'Northwest territory', 'Greenland', 'Alberta',
+                                          'Ontario', 'Quebec', 'Western United States',
+                                          'Eastern United States', 'Mexico'],
+                        'South America': ['Venezuela', 'Brazil', 'Peru', 'Argentina'],
+                        'Africa': ['North Africa', 'Egypt', 'East Africa',
+                                   'Congo', 'South Africa', 'Madagascar'],
+                        'Europe': ['Iceland', 'Scandinavia', 'Ukraine', 'Northern Europe',
+                                   'Western Europe', 'Southern Europe', 'Great Britain'],
+                        'Asia': ['Ural', 'Siberia', 'Yakutsk', 'Kamchatka', 'Japan',
+                                 'Irkutsk', 'Kazakhstan', 'Middle East', 'India', 'Siam',
+                                 'China', 'Mongolia'],
+                        'Oceania': ['Indonesia', 'New Guinea', 'Eastern Australia',
+                                    'Western Australia']}
+
+        self.regions_bonus_dict = {'North America': 5, 'South America': 2, 'Africa': 3,
+                              'Europe': 5, 'Asia': 7, 'Oceania': 2}
+
+        self.regions_country_count_dict = {'North America': 9, 'South America': 4, 'Africa': 6,
+                              'Europe': 7, 'Asia': 12, 'Oceania': 4}
 
     def fill_defend_value_map(self):
         """Fill value map of which countries have highest priority to be defended"""
@@ -64,6 +83,25 @@ class Heuristic_agent:
         armies_to_deduct = move[2]
         current_owned_countries[str(country_to_be_altered)] -= armies_to_deduct
         return current_owned_countries
+
+    def regions_owned_count(self, owned_countries):
+        """Checks to see which regions on the map are owned completely"""
+
+        owned_count  = {'North America': 0, 'South America': 0, 'Africa': 0,
+         'Europe': 0, 'Asia': 0, 'Oceania': 0}
+        owned_completely = []
+
+        for owned_country in owned_countries:
+            for region in self.regions_country_count_dict.keys():
+                if str(owned_country) in self.regions_dict[str(region)]:
+                    self.regions_country_count_dict[str(region)] -= 1
+                    owned_count[str(region)] += 1
+
+        for region in owned_count.keys():
+            if owned_count[str(region)] == len(self.regions_dict[str(region)]):
+                owned_completely.append(str(region))
+
+        return owned_completely
 
     def choose_moves(self, map, colour, owned_countries, reinf_card_count):
         """Chooses a move based on game heuristics alone. The moves are
@@ -110,10 +148,27 @@ class Heuristic_agent:
                             if str(neighbouring_country) not in self.empty_countries:
                                 self.empty_countries.append(str(neighbouring_country))
 
-
-
+        """If there are enemy owned countries bordering owned countries"""
         if len(self.enemy_countries) > 0:
+            """If it is possible to totally overwhelm an enemy country"""
             if len(self.overwhelming_move) > 0:
+                owned_completely = self.regions_owned_count(owned_countries)
+                for region in self.regions_country_count_dict.keys():
+                    """If an antire region can be won by taking a single country"""
+                    if self.regions_country_count_dict[str(region)] == 1:
+                        """Check if there is a possible overhwleming move for this country"""
+                        for move in self.overwhelming_move:
+                            if str(move[1]) in self.regions_dict[str(region)]:
+                                """Add the move to the list of chosen moves"""
+                                chosen_moves.append(move)
+
+
+
+
+
+
+
+
 
 
                     """If it is possible to prevent negative actions from countries in the critical list, 

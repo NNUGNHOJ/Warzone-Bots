@@ -300,3 +300,16 @@ class Game:
         self.adjust_map(self.player1.get_owned_countries(), self.player2.get_owned_countries())
 
         return
+
+    def check_game_over(self):
+        """Checks if the game is over (meaning one colour doesn't own any countries)"""
+        if len(self.player1.get_owned_countries()) == 0 and len(self.player2.get_owned_countries()) == 0:
+            return False
+
+        if len(self.player1.get_owned_countries()) == 0:
+            return True
+
+        if len(self.player2.get_owned_countries()) == 0:
+            return True
+
+        return False
