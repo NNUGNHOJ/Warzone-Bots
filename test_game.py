@@ -83,15 +83,14 @@ def game_based_on_win_criteria(player1, player2, print_map, print_graph):
     if print_graph:
         print_stats(results)
 
-
 #play a game which ends only when one of the 2 players doesn't own any countries anymore
 # NOTE: this doesnt always work for the random agents because sometimes they're just too
 # dumb to actually win a game
 
-#game_based_on_win_criteria('Random', 'Random', True, False)
+#game_based_on_win_criteria('Heuristic', 'Random', True, False)
 
 #play game based on a maximum number of rounds
-game_based_on_number_of_rounds('Random', 'Random', 30, True, False)
+game_based_on_number_of_rounds('Heuristic', 'Random', 20, True, False)
 
 
 

@@ -58,8 +58,6 @@ class Heuristic_agent:
     def fill_attack_value_map(self):
         """Fill value map of which countries have highest priority to be attacked"""
 
-    """EVERYTHING UNDER HERE IS JUST RANDOM AGENT CODE...."""
-
     def get_possible_moves(self, owned_countries, map):
         """Returns an array of all the possible moves the agent could make, where
         a move is (origin_country, destination_country, armies)"""
@@ -103,6 +101,15 @@ class Heuristic_agent:
 
         return owned_completely
 
+    def play_all_reinf_cards(self, reinf_card_count):
+        """if the agent has any reinforcement cards to play, play them all"""
+        if reinf_card_count > 0:
+            reinf_cards_played = reinf_card_count
+        else:
+            reinf_cards_played = 0
+
+        return reinf_cards_played
+
     def choose_moves(self, map, colour, owned_countries, reinf_card_count):
         """Chooses a move based on game heuristics alone. The moves are
         returned in the format (origin_country, destination_country, army_count)"""
@@ -110,79 +117,84 @@ class Heuristic_agent:
         neighbouring_countries = []
         chosen_moves = []
 
-        """if the agent has any reinforcement cards to play, play them all"""
-        if reinf_card_count > 0:
-            reinf_cards_played = reinf_card_count
-        else:
-            reinf_cards_played = 0
+        reinf_cards_played = self.play_all_reinf_cards(reinf_card_count)
 
         for country in list(current_owned_countries.keys()):
             neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
 
+            print("1")
+
             possible_moves = self.get_possible_moves(current_owned_countries, map)
 
-            while len(possible_moves) > 0:
-                possible_moves = self.get_possible_moves(current_owned_countries, map)
-                if len(possible_moves) > 0:
+            print("2")
 
-                    """check if any neighbouring countries have opponent armies"""
-                    for neighbouring_country in neighbouring_countries:
-                        if map.get_colours_dict()[str(neighbouring_country)] != str(self.colour):
-                            self.defend_value_map[str(country)] += 1
-                            if str(neighbouring_country) not in self.enemy_countries:
-                                self.enemy_countries.append(str(neighbouring_country))
+            possible_moves = self.get_possible_moves(current_owned_countries, map)
+            if len(possible_moves) > 0:
 
-                            """work out when an army can overwhelm a neighbouring country 
-                                                in one turn, based on their max possible income"""
+                """check if any neighbouring countries have opponent armies"""
+                for neighbouring_country in neighbouring_countries[0]:
+                    if map.get_colours_dict()[str(neighbouring_country)] != str(self.colour):
+                        self.defend_value_map[str(country)] += 1
+                        if str(neighbouring_country) not in self.enemy_countries:
+                            self.enemy_countries.append(str(neighbouring_country))
 
-                            # TODO: need to account for the max possible armies that the opponent \\
-                            # might be able to put into a country before the moves get made.
+                        """work out when an army can overwhelm a neighbouring country 
+                                            in one turn, based on their max possible income"""
 
-                            if map.get_armies_dict()[str(neighbouring_country)] > 0 :
-                                if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) < map.get_armies_dict()[str(country)]:
-                                    self.overwhelming_move.append((str(country), str(neighbouring_country),
-                                                                   str(map.get_armies_dict()[str(neighbouring_country)] * 1.5)))
+                        # TODO: need to account for the max possible armies that the opponent \\
+                        # might be able to put into a country before the moves get made.
 
-                        """Check if neighbouring country has 0 armies"""
-                        if map.get_armies_dict()[str(neighbouring_country)] == 0:
-                            if str(neighbouring_country) not in self.empty_countries:
-                                self.empty_countries.append(str(neighbouring_country))
+                        if map.get_armies_dict()[str(neighbouring_country)] > 0:
+                            if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) < map.get_armies_dict()[str(country)]:
+                                self.overwhelming_move.append((str(country), str(neighbouring_country),
+                                                               round(map.get_armies_dict()[str(neighbouring_country)] * 1.5)))
+
+                    """Check if neighbouring country has 0 armies"""
+                    if map.get_armies_dict()[str(neighbouring_country)] == 0:
+                        if str(neighbouring_country) not in self.empty_countries:
+                            self.empty_countries.append((str(country), str(neighbouring_country)))
+
+            print("3")
 
         """If there are enemy owned countries bordering owned countries"""
         if len(self.enemy_countries) > 0:
             """If it is possible to totally overwhelm an enemy country"""
             if len(self.overwhelming_move) > 0:
+                print("4")
                 owned_completely = self.regions_owned_count(owned_countries)
                 for region in self.regions_country_count_dict.keys():
-                    """If an antire region can be won by taking a single country"""
+                    """If an entire region can be won by taking a single country"""
                     if self.regions_country_count_dict[str(region)] == 1:
-                        """Check if there is a possible overhwleming move for this country"""
+                        """Check if there is a possible overwhelming move for this country"""
                         for move in self.overwhelming_move:
                             if str(move[1]) in self.regions_dict[str(region)]:
                                 """Add the move to the list of chosen moves"""
                                 chosen_moves.append(move)
+                                self.remove_used_armies_from_pool(current_owned_countries, move)
+
+        print("5")
+
+        for empty_country_moves in self.empty_countries:
+            """If owned country has any armies in it"""
+            if current_owned_countries[str(empty_country_moves[0])] > 0:
+                move = (str(empty_country_moves[0]), str(empty_country_moves[1]), 1)
+                chosen_moves.append(move)
+                self.remove_used_armies_from_pool(current_owned_countries, move)
+                self.empty_countries.remove(empty_country_moves)
 
 
+                """If it is possible to prevent negative actions from countries in the critical list, 
+                then do this. prioritise based on whether friendlies own the entire region, and then
+                on the value of the region"""
 
+                """If there are armies left after dealing with priority and critical lists, or if they 
+                were both empty..."""
 
+                """if a neighbouring country has 0 armies and if there is an available army nearby, 
+                                    send 1 army over to take that country"""
 
-
-
-
-
-
-                    """If it is possible to prevent negative actions from countries in the critical list, 
-                    then do this. prioritise based on whether friendlies own the entire region, and then
-                    on the value of the region"""
-
-                    """If there are armies left after dealing with priority and critical lists, or if they 
-                    were both empty..."""
-
-                    """if a neighbouring country has 0 armies and if there is an available army nearby, 
-                                        send 1 army over to take that country"""
-
-                    """Look at owned countries, and identify the closest attainable entire territory, and 
-                    make moves to obtain it"""
+                """Look at owned countries, and identify the closest attainable entire territory, and 
+                make moves to obtain it"""
 
         return chosen_moves, reinf_cards_played, owned_countries
 
