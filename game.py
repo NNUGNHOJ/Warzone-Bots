@@ -133,7 +133,7 @@ class Game:
             defending_player_armies = self.map_graph.get_armies_dict()[str(move[1])]
 
         """For every army attacking, get outcome of a single attack"""
-        for i in range(attacking_player_armies):
+        for i in range(int(attacking_player_armies)):
             """If there are still defending armies in destination_country"""
             if self.map_graph.get_armies_dict()[str(move[1])] > 0:
                 print(str(attacking_player.get_colour()) + ' is attacking ' + str(move[1]))
@@ -243,8 +243,8 @@ class Game:
     def allocate_armies(self, player1_additional_armies, player2_additional_armies):
         """Allows both players to use their allocate_armies() function to allocate
         their armies in owned countries"""
-        self.player1.allocate_armies(player1_additional_armies)
-        self.player2.allocate_armies(player2_additional_armies)
+        self.player1.allocate_armies(player1_additional_armies, self.map_graph)
+        self.player2.allocate_armies(player2_additional_armies, self.map_graph)
 
     def perform_moves_in_order(self):
         """Takes an array of moves, and performs them in alternating order. Effectively performing 1 turn"""

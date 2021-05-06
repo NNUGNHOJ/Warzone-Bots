@@ -1,4 +1,5 @@
 import random
+from numpy.random import choice
 
 class Heuristic_agent:
     """Uses game heuristics only"""
@@ -67,7 +68,7 @@ class Heuristic_agent:
             current_neighbours = [n for n in map.map_graph.neighbors(country)]
             current_armies_count = owned_countries[str(country)]
             for neighbour in current_neighbours:
-                for i in range(current_armies_count + 1):
+                for i in range(int(current_armies_count + 1)):
                     possible_moves.append((str(country), str(neighbour), i))
 
         return possible_moves
@@ -122,12 +123,6 @@ class Heuristic_agent:
         for country in list(current_owned_countries.keys()):
             neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
 
-            print("1")
-
-            possible_moves = self.get_possible_moves(current_owned_countries, map)
-
-            print("2")
-
             possible_moves = self.get_possible_moves(current_owned_countries, map)
             if len(possible_moves) > 0:
 
@@ -154,13 +149,10 @@ class Heuristic_agent:
                         if str(neighbouring_country) not in self.empty_countries:
                             self.empty_countries.append((str(country), str(neighbouring_country)))
 
-            print("3")
-
         """If there are enemy owned countries bordering owned countries"""
         if len(self.enemy_countries) > 0:
             """If it is possible to totally overwhelm an enemy country"""
             if len(self.overwhelming_move) > 0:
-                print("4")
                 owned_completely = self.regions_owned_count(owned_countries)
                 for region in self.regions_country_count_dict.keys():
                     """If an entire region can be won by taking a single country"""
@@ -171,8 +163,6 @@ class Heuristic_agent:
                                 """Add the move to the list of chosen moves"""
                                 chosen_moves.append(move)
                                 self.remove_used_armies_from_pool(current_owned_countries, move)
-
-        print("5")
 
         for empty_country_moves in self.empty_countries:
             """If owned country has any armies in it"""
@@ -198,22 +188,77 @@ class Heuristic_agent:
 
         return chosen_moves, reinf_cards_played, owned_countries
 
-    def allocate_armies(self, additional_armies, owned_countries):
-        """Takes in a number of armies to be allocated, and randomly allocates
-        them to countries. The returns the owned_countries dict"""
-        print(str(self.colour) + ' owns these countries: ' + str(owned_countries))
-        while additional_armies > 0:
-            country = random.choice(list(owned_countries.keys()))
-            print('Algorithm has chosen ' + str(country) + ' to be allocated an army')
-            owned_countries[str(country)] += 1
-            additional_armies -= 1
 
-        print('after allocating, ' + str(self.colour) + ' owns these countries: ' + str(owned_countries))
+    def allocate_armies(self, additional_armies, owned_countries, map):
+        """Takes in a number of armies to be allocated, works out which countries most
+         need additional armies. Then allocates armies based on a probability distribution,
+         where countries that need armies are more likely to get given them. Then returns
+         the owned_countries dict"""
+
+        current_owned_countries = owned_countries
+        neighbouring_countries = []
+        placement_probability_dict = owned_countries
+
+        print('1: ' + str(placement_probability_dict))
+
+        """set initial probabilities to 0"""
+        for key, value in placement_probability_dict.items():
+            placement_probability_dict[str(key)] = 0
+
+        print('2: ' + str(placement_probability_dict))
+
+        """For each country, work out how many armies to give it"""
+        for country in list(current_owned_countries.keys()):
+            neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
+
+            """check if any neighbouring countries have opponent armies"""
+            for neighbouring_country in neighbouring_countries[0]:
+                """If neighbour colour not the same as player colour"""
+                if map.get_colours_dict()[str(neighbouring_country)] != str(self.colour):
+                    """If neighbouring country isn't owned by anyone, just add 1"""
+                    if map.get_colours_dict()[str(neighbouring_country)] == 'b':
+                        placement_probability_dict[str(country)] += 1
+                    else:
+                        """If country already has an overwhelming number of armies, dont bother adding more, save 
+                        them for some other country"""
+                        if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) >= map.get_armies_dict()[str(country)]:
+                            placement_probability_dict[str(country)] += 1
+                        else:
+                            """Add probability based on how many armies are in that neighbouring country"""
+                            placement_probability_dict[str(country)] += map.get_armies_dict()[str(neighbouring_country)]
+
+        """Allocate the armies based on the collected probability distribution"""
+        print('3: ' + str(placement_probability_dict))
+        """Turn values into probabilities of allocating"""
+        total = 0
+        list_of_candidates = [*placement_probability_dict]
+        probability_distribution = []
+
+        for key, item in placement_probability_dict.items():
+            print('item: ' + str(item))
+            total += item
+
+        for key, item in placement_probability_dict.items():
+            placement_probability_dict[str(key)] = item / total
+            probability_distribution.append(item / total)
+
+        print(len(list_of_candidates))
+        print(len(probability_distribution))
+
+        """Choose countries 'randomly' but weighted based on probability distribution"""
+        chosen_countries = random.choices(population=list_of_candidates,
+                                          weights=probability_distribution,
+                                          k=additional_armies)
+        print(chosen_countries)
+
+        """Allocate the chosen countries"""
+        for country in chosen_countries:
+            owned_countries[str(country)] += 1
 
         return owned_countries
 
     def consider_reinf_card(self, reinf_card_count):
-        """Random agent always plays all reinforcement card immediately"""
+        """Heuristic agent always plays all reinforcement card immediately"""
         return reinf_card_count
 
 

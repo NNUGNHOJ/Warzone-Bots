@@ -74,7 +74,7 @@ class Controller:
         reinf_cards_to_play = self.algorithm.consider_reinf_card(self.reinf_card_count)
         return reinf_cards_to_play
 
-    def allocate_armies(self, additional_armies):
+    def allocate_armies(self, additional_armies, map):
         """Decide where to allocate the new armies"""
-        self.owned_countries = self.algorithm.allocate_armies(additional_armies, self.owned_countries)
+        self.owned_countries = self.algorithm.allocate_armies(additional_armies, self.owned_countries, map)
 
