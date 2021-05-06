@@ -199,13 +199,9 @@ class Heuristic_agent:
         neighbouring_countries = []
         placement_probability_dict = owned_countries
 
-        print('1: ' + str(placement_probability_dict))
-
         """set initial probabilities to 0"""
         for key, value in placement_probability_dict.items():
             placement_probability_dict[str(key)] = 0
-
-        print('2: ' + str(placement_probability_dict))
 
         """For each country, work out how many armies to give it"""
         for country in list(current_owned_countries.keys()):
@@ -228,7 +224,7 @@ class Heuristic_agent:
                             placement_probability_dict[str(country)] += map.get_armies_dict()[str(neighbouring_country)]
 
         """Allocate the armies based on the collected probability distribution"""
-        print('3: ' + str(placement_probability_dict))
+
         """Turn values into probabilities of allocating"""
         total = 0
         list_of_candidates = [*placement_probability_dict]
@@ -242,14 +238,10 @@ class Heuristic_agent:
             placement_probability_dict[str(key)] = item / total
             probability_distribution.append(item / total)
 
-        print(len(list_of_candidates))
-        print(len(probability_distribution))
-
         """Choose countries 'randomly' but weighted based on probability distribution"""
         chosen_countries = random.choices(population=list_of_candidates,
                                           weights=probability_distribution,
                                           k=additional_armies)
-        print(chosen_countries)
 
         """Allocate the chosen countries"""
         for country in chosen_countries:
