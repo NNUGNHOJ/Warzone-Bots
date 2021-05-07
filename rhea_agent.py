@@ -228,6 +228,22 @@ class RHEA_agent:
             if len(owned_countries_copy) == 0:
                 return -100
 
+        # difference in boarder unints
+        """
+        looking to establish a measure which shows strength of force against direct threats
+        TODO:
+            - check how many countries are boardering enemy units
+            - add unit totals against foreign units (country by country)
+            - should we return a % of boardering countries that have a dominating force?
+        """
+        # boarder_countries = []
+        # for country in list(owned_countries_copy.keys()):
+        #     # double check the map_graph
+        #     boarder_countries.append([n for n in map_copy.map_graph.neighbors(country)])
+
+
+
+
         # otherwise return score
         # number of countries
         fitness = len(owned_countries_copy)
