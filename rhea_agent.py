@@ -7,7 +7,7 @@ import time
 
 class RHEA_agent:
     # set random seed
-    #random.seed(10)
+    # random.seed(10)
 
     def __init__(self, colour):
         self.colour = colour
@@ -37,16 +37,16 @@ class RHEA_agent:
 
     def adjust_map(self, player1_owned_countries, player2_owned_countries, state, map):
         """Changes the map to reflect the owned countries and army counts as per the players"""
-        #for country in player1_owned_countries.keys():
+        # for country in player1_owned_countries.keys():
         for country, value in player1_owned_countries.items():
             map.change_colour(str(country), 'b')
             map.set_army_count(str(country), player1_owned_countries[str(country)])
 
-        #for country in player2_owned_countries.keys():
+        # for country in player2_owned_countries.keys():
         for country, value in player2_owned_countries.items():
             map.change_colour(str(country), 'r')
             map.set_army_count(str(country), player2_owned_countries[str(country)])
-        return
+        return map
 
     def performAction(self, action, owned_countries, map, state):
         """Takes a single move and performs it on the map graph, a move consists
@@ -178,11 +178,17 @@ class RHEA_agent:
 
         """Adjust the game map to reflect the new game state after the move"""
         if defending_player_colour == 'r':
-            self.adjust_map(state, defending_player_owned_countries, state, map)
+            map = self.adjust_map(state, defending_player_owned_countries, state, map)
         elif defending_player_colour == 'b':
-            self.adjust_map(defending_player_owned_countries, state, map)
+            map = self.adjust_map(defending_player_owned_countries, state, map)
         else:
-            self.adjust_map(state, {}, state, map)
+            map = self.adjust_map(state, {}, state, map)
+
+        new_owned_countries = {}
+        for key, value in map.colours.items():
+            if value == self.colour:
+                army_in_country = map.armies[str(key)]
+                new_owned_countries[str(key)] = army_in_country
 
         return
 
@@ -216,14 +222,14 @@ class RHEA_agent:
             action = individual[i]
             possible_moves = self.get_possible_moves(owned_countries_copy, map_copy)
             if action in possible_moves:
-                self.performAction(action, owned_countries_copy, map_copy,  owned_countries_copy)
+                self.performAction(action, owned_countries_copy, map_copy, owned_countries_copy)
             else:
                 # random action
                 if len(possible_moves) >= 1:
                     action = possible_moves[random.randint(0, len(possible_moves) - 1)]
                 else:
                     return -100
-                self.performAction(action, owned_countries_copy, map_copy,  owned_countries_copy)
+                self.performAction(action, owned_countries_copy, map_copy, owned_countries_copy)
             # check if gameover
             if len(owned_countries_copy) == 0:
                 return -100
@@ -236,22 +242,47 @@ class RHEA_agent:
             - add unit totals against foreign units (country by country)
             - should we return a % of boardering countries that have a dominating force?
         """
-        # boarder_countries = []
-        # for country in list(owned_countries_copy.keys()):
-        #     # double check the map_graph
-        #     boarder_countries.append([n for n in map_copy.map_graph.neighbors(country)])
+        num_dominating_countries = 0
+        dominating_score = 0
+        boarder_countries = []
+        enemy_owned_countries = {}
+        if (self.colour == 'r'):
+            enemy_colour = 'b'
+        else:
+            enemy_colour = 'r'
+        # get dict with all enemies
+        for key, value in map.colours.items():
+            if value != self.colour:
+                army_in_country = map.armies[str(key)]
+                enemy_owned_countries[str(key)] = army_in_country
 
+        for country in list(owned_countries_copy.keys()):
+            boarder_countries = [n for n in map.map_graph.neighbors(country)]
+            country_armies = map.get_armies_dict()[str(country)]
+            for boarder_country in boarder_countries:
+                if map.get_colours_dict()[str(boarder_country)] == enemy_colour:
+                    # enemy country, check if we have more armies than can be allocated bny the opponent
+                    num_allocations_enemy = self.score_additional_armies(enemy_owned_countries)
 
+                    #get current number of armies for both
+                    enemy_country_armies = map.get_armies_dict()[str(boarder_country)]
 
+                    if (country_armies > (enemy_country_armies + num_allocations_enemy)):
+                        #enemy can't take over our copuntry so positive score
+                        dominating_score += 50
+                        #or percentage
+                        num_dominating_countries += 1
 
+        percentage_dominating = num_dominating_countries / len(owned_countries_copy.keys())
         # otherwise return score
         # number of countries
         fitness = len(owned_countries_copy)
 
-        #score for additional armies
+        # score for additional armies
         add_score = self.score_additional_armies(owned_countries)
 
-        return fitness + (5*add_score)
+        #return fitness + (5 * add_score) + (percentage_dominating*100)
+        return fitness + (5 * add_score) + dominating_score
 
     def evaluateAction(self, action, map, owned_countries):
         # make copy of the map and owned countries
@@ -259,7 +290,7 @@ class RHEA_agent:
         owned_countries_copy = deepcopy(owned_countries)
 
         # do action
-        self.performAction(action, owned_countries_copy, map_copy,  owned_countries_copy)
+        self.performAction(action, owned_countries_copy, map_copy, owned_countries_copy)
 
         # evaluate
         fitness = len(owned_countries_copy)
@@ -281,7 +312,7 @@ class RHEA_agent:
                 action = possible_actions[n]
                 individual.append(action)
                 # do action
-                self.performAction(action, owned_countries_copy, map_copy,  owned_countries_copy)
+                self.performAction(action, owned_countries_copy, map_copy, owned_countries_copy)
 
             else:
                 best_score = 0
@@ -297,7 +328,7 @@ class RHEA_agent:
                 individual.append(best_action)
 
                 # do action
-                self.performAction(best_action, owned_countries_copy, map_copy,  owned_countries_copy)
+                self.performAction(best_action, owned_countries_copy, map_copy, owned_countries_copy)
 
         return individual
 
@@ -381,6 +412,7 @@ class RHEA_agent:
         return new_population, new_population_scores
 
     def choose_moves(self, map, colour, owned_countries, reinf_card_count):
+        print("rhea agent is: ", colour)
         self.map = map
         t0 = time.clock()
         print(str(self.colour) + ' owns these countries: ' + str(owned_countries))
@@ -420,15 +452,16 @@ class RHEA_agent:
             if best_inidvidual[0] not in self.get_possible_moves(owned_countries, map):
                 continue
 
-            #print('BEST ACTION', best_inidvidual[0])
+            # print('BEST ACTION', best_inidvidual[0])
             all_moves.append(best_inidvidual[0])
-            self.performAction(best_inidvidual[0], owned_countries, map,  owned_countries)
+            self.performAction(best_inidvidual[0], owned_countries, map, owned_countries)
 
-            #updated time
+            # updated time
             time_elapsed = time.clock() - t0
             time_per_move = time_elapsed / moves
 
         print(str(self.colour) + ' does these moves: ' + str(all_moves))
+        print(str(self.colour) + ' has these countries: ' + str(owned_countries))
         return all_moves, reinf_cards_played, owned_countries
 
     def consider_reinf_card(self, reinf_card_count):
@@ -466,12 +499,11 @@ class RHEA_agent:
         out = [None] * num_countries
         self.getCombinations(0, additional_armies, out, 0, combis, num_countries)
 
-        #get all permutations
+        # get all permutations
         for comb in combis:
             permu = list(itertools.permutations(comb))
             for i in permu:
                 combis_all.append(i)
-
 
         for combi in combis_all:
             j = 0
@@ -483,13 +515,63 @@ class RHEA_agent:
 
         return all_possible_owned_countries
 
-    def allocate_armies(self, additional_armies, owned_countries):
-        possible_allocations = self.get_possible_allocations(additional_armies, owned_countries)
+    def allocate_armies(self, additional_armies, owned_countries, map):
+        """Takes in a number of armies to be allocated, works out which countries most
+                 need additional armies. Then allocates armies based on a probability distribution,
+                 where countries that need armies are more likely to get given them. Then returns
+                 the owned_countries dict"""
 
-        best_score = 0
+        current_owned_countries = deepcopy(owned_countries)
+        neighbouring_countries = []
+        placement_probability_dict = owned_countries
 
-       # for allocation in possible_allocations:
-            #I can't call choosemoves here and return things because we don't have those parameters
+        """set initial probabilities to 0"""
+        for key, value in placement_probability_dict.items():
+            placement_probability_dict[str(key)] = 0
 
-        #so we have to do random:
-        return random.choice(possible_allocations)
+        """For each country, work out how many armies to give it"""
+        for country in list(current_owned_countries.keys()):
+            neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
+
+            """check if any neighbouring countries have opponent armies"""
+            for neighbouring_country in neighbouring_countries[0]:
+                """If neighbour colour not the same as player colour"""
+                if map.get_colours_dict()[str(neighbouring_country)] != str(self.colour):
+                    """If neighbouring country isn't owned by anyone, just add 1"""
+                    if map.get_colours_dict()[str(neighbouring_country)] == 'b':
+                        placement_probability_dict[str(country)] += 1
+                    else:
+                        """If country already has an overwhelming number of armies, dont bother adding more, save 
+                        them for some other country"""
+                        if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) >= map.get_armies_dict()[
+                            str(country)]:
+                            placement_probability_dict[str(country)] += 1
+                        else:
+                            """Add probability based on how many armies are in that neighbouring country"""
+                            placement_probability_dict[str(country)] += map.get_armies_dict()[str(neighbouring_country)]
+
+        """Allocate the armies based on the collected probability distribution"""
+
+        """Turn values into probabilities of allocating"""
+        total = 0
+        list_of_candidates = [*placement_probability_dict]
+        probability_distribution = []
+
+        for key, item in placement_probability_dict.items():
+            total += item
+
+        for key, item in placement_probability_dict.items():
+            placement_probability_dict[str(key)] = item / total
+            probability_distribution.append(item / total)
+
+        """Choose countries 'randomly' but weighted based on probability distribution"""
+        chosen_countries = random.choices(population=list_of_candidates,
+                                          weights=probability_distribution,
+                                          k=additional_armies)
+
+
+        """Allocate the chosen countries"""
+        for country in chosen_countries:
+            current_owned_countries[str(country)] += 1
+
+        return current_owned_countries

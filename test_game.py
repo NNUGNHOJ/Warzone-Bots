@@ -90,7 +90,7 @@ def game_based_on_win_criteria(player1, player2, print_map, print_graph):
 #game_based_on_win_criteria('Heuristic', 'Random', True, False)
 
 #play game based on a maximum number of rounds
-game_based_on_number_of_rounds('Heuristic', 'Random', 30, True, False)
+game_based_on_number_of_rounds('rhea', 'Random', 30, True, False)
 
 
 
