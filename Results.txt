@@ -1,0 +1,2 @@
+Number of countries owned by player 1: 2
+Number of countries owned by player 2: 31

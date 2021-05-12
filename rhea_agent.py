@@ -268,8 +268,6 @@ class RHEA_agent:
                     enemy_country_armies = map.get_armies_dict()[str(boarder_country)]
 
                     if (country_armies > (enemy_country_armies + num_allocations_enemy)):
-                        #enemy can't take over our copuntry so positive score
-                        dominating_score += 50
                         #or percentage
                         num_dominating_countries += 1
 
@@ -281,8 +279,8 @@ class RHEA_agent:
         # score for additional armies
         add_score = self.score_additional_armies(owned_countries)
 
-        #return fitness + (5 * add_score) + (percentage_dominating*100)
-        return fitness + (5 * add_score) + dominating_score
+        return fitness + (5 * add_score) + (percentage_dominating*100)
+
 
     def evaluateAction(self, action, map, owned_countries):
         # make copy of the map and owned countries

@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="237b46d3-c98b-47cf-89a4-cf71ee84d00c" name="Default Changelist" comment="Heuristic agent works, but there are some bugs. I think random agent may also need some tweaking, as it's ending up with like 2 countries with 400 armies (if you let it run till the game is over)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rhea_agent.py" beforeDir="false" afterPath="$PROJECT_DIR$/rhea_agent.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_game.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_game.py" afterDir="false" />
     </list>
@@ -110,7 +109,9 @@
       <workItem from="1620802321739" duration="188000" />
       <workItem from="1620802512830" duration="444000" />
       <workItem from="1620803061166" duration="14000" />
-      <workItem from="1620803075698" duration="4476000" />
+      <workItem from="1620803075698" duration="4548000" />
+      <workItem from="1620825179347" duration="259000" />
+      <workItem from="1620840832453" duration="2520000" />
     </task>
     <servers />
   </component>
