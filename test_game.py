@@ -35,8 +35,6 @@ def print_stats(results):
 
 
 
-
-
 def game_based_on_number_of_rounds(player1, player2, number_of_rounds, print_map, print_graph):
     #create a game two Random players
     test_game = game.Game(str(player1), str(player2))
@@ -106,7 +104,7 @@ filename = "Results_" + specifications + ".txt"
 f = open(filename, "w")
 for i in range(NUM_GAMES):
     f.write("Game: " + str(i) + "\n")
-    results, test_game = game_based_on_number_of_rounds('Heuristic', 'Random', 30, False, True)
+    results, test_game = game_based_on_number_of_rounds('Heuristic', 'rhea', 3, False, True)
 
     #number of countries owned
     player_1_countries_owned = results[0]

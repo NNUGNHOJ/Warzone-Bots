@@ -180,7 +180,7 @@ class RHEA_agent:
         if defending_player_colour == 'r':
             map = self.adjust_map(state, defending_player_owned_countries, state, map)
         elif defending_player_colour == 'b':
-            map = self.adjust_map(defending_player_owned_countries, state, map)
+            map = self.adjust_map(state, defending_player_owned_countries, state, map)
         else:
             map = self.adjust_map(state, {}, state, map)
 

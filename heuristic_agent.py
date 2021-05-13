@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 from numpy.random import choice
 
 class Heuristic_agent:
@@ -191,11 +192,11 @@ class Heuristic_agent:
 
     def allocate_armies(self, additional_armies, owned_countries, map):
         """Takes in a number of armies to be allocated, works out which countries most
-         need additional armies. Then allocates armies based on a probability distribution,
-         where countries that need armies are more likely to get given them. Then returns
-         the owned_countries dict"""
+                 need additional armies. Then allocates armies based on a probability distribution,
+                 where countries that need armies are more likely to get given them. Then returns
+                 the owned_countries dict"""
 
-        current_owned_countries = owned_countries
+        current_owned_countries = deepcopy(owned_countries)
         neighbouring_countries = []
         placement_probability_dict = owned_countries
 
@@ -217,7 +218,8 @@ class Heuristic_agent:
                     else:
                         """If country already has an overwhelming number of armies, dont bother adding more, save 
                         them for some other country"""
-                        if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) >= map.get_armies_dict()[str(country)]:
+                        if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) >= map.get_armies_dict()[
+                            str(country)]:
                             placement_probability_dict[str(country)] += 1
                         else:
                             """Add probability based on how many armies are in that neighbouring country"""
@@ -231,7 +233,6 @@ class Heuristic_agent:
         probability_distribution = []
 
         for key, item in placement_probability_dict.items():
-            print('item: ' + str(item))
             total += item
 
         for key, item in placement_probability_dict.items():
@@ -243,11 +244,12 @@ class Heuristic_agent:
                                           weights=probability_distribution,
                                           k=additional_armies)
 
+
         """Allocate the chosen countries"""
         for country in chosen_countries:
-            owned_countries[str(country)] += 1
+            current_owned_countries[str(country)] += 1
 
-        return owned_countries
+        return current_owned_countries
 
     def consider_reinf_card(self, reinf_card_count):
         """Heuristic agent always plays all reinforcement card immediately"""
