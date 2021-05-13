@@ -94,8 +94,6 @@ def game_based_on_win_criteria(player1, player2, print_map, print_graph):
     if print_graph:
         print_stats(results)
 
-
-
 #For now because of optimization we might need to limit it to a number of turn so
 #i'm using the game based on number of rounds function
 NUM_GAMES = 1
@@ -104,6 +102,7 @@ filename = "Results_" + specifications + ".txt"
 f = open(filename, "w")
 for i in range(NUM_GAMES):
     f.write("Game: " + str(i) + "\n")
+    f.write("Player 1: Heuristic, Player 2: Rhea" + "\n")
     results, test_game = game_based_on_number_of_rounds('Heuristic', 'rhea', 3, False, True)
 
     #number of countries owned

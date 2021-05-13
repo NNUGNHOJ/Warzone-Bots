@@ -414,7 +414,7 @@ class RHEA_agent:
         self.map = map
         t0 = time.clock()
         print(str(self.colour) + ' owns these countries: ' + str(owned_countries))
-        # begin here
+        #begin here
         population = []
         population_scores = []
         all_moves = []
