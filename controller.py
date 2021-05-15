@@ -1,6 +1,5 @@
 import random_agent
 import heuristic_agent
-import rhea_agent
 import math
 
 
@@ -10,6 +9,7 @@ class Controller:
 
     def __init__(self, colour, algorithm):
         self.colour = colour
+        print('Agent algorithm = ' + str(algorithm) + ', agent colour = ' + str(colour))
         self.owned_countries = {}  # {'country_name': army count in this country}
         self.reinf_card_count = 0
         self.new_reinf_card = 0 # when new_reinf_card is 8 the player gets 1 new reinf card
@@ -19,9 +19,6 @@ class Controller:
         if algorithm == 'Heuristic':
             print('GOT TO HERE')
             self.algorithm = heuristic_agent.Heuristic_agent(colour)
-        if algorithm == 'rhea':
-            print('using rhea')
-            self.algorithm = rhea_agent.RHEA_agent(colour)
         else:
             print("Only Random and Heuristic agents have been implemented so far...")
 
