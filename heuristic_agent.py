@@ -1,5 +1,4 @@
 import random
-from copy import deepcopy
 from numpy.random import choice
 
 class Heuristic_agent:
@@ -131,24 +130,27 @@ class Heuristic_agent:
                 for neighbouring_country in neighbouring_countries[0]:
                     if map.get_colours_dict()[str(neighbouring_country)] != str(self.colour):
                         self.defend_value_map[str(country)] += 1
+
                         if str(neighbouring_country) not in self.enemy_countries:
                             self.enemy_countries.append(str(neighbouring_country))
 
                         """work out when an army can overwhelm a neighbouring country 
                                             in one turn, based on their max possible income"""
 
-                        # TODO: need to account for the max possible armies that the opponent \\
-                        # might be able to put into a country before the moves get made.
-
+                        """If neighbouring country has armies in it"""
                         if map.get_armies_dict()[str(neighbouring_country)] > 0:
+                            """If friendly army count is greater than 1.5 * enemy army count, add overwhelming move"""
                             if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) < map.get_armies_dict()[str(country)]:
                                 self.overwhelming_move.append((str(country), str(neighbouring_country),
                                                                round(map.get_armies_dict()[str(neighbouring_country)] * 1.5)))
+                                print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' + str(self.overwhelming_move))
 
                     """Check if neighbouring country has 0 armies"""
                     if map.get_armies_dict()[str(neighbouring_country)] == 0:
                         if str(neighbouring_country) not in self.empty_countries:
                             self.empty_countries.append((str(country), str(neighbouring_country)))
+
+            neighbouring_countries.clear()
 
         """If there are enemy owned countries bordering owned countries"""
         if len(self.enemy_countries) > 0:
@@ -173,40 +175,50 @@ class Heuristic_agent:
                 self.remove_used_armies_from_pool(current_owned_countries, move)
                 self.empty_countries.remove(empty_country_moves)
 
+        print('heuristic chosen moves before = ' + str(chosen_moves))
+        print('heuristic owned countries before = ' + str(owned_countries))
+        possible_moves = self.get_possible_moves(current_owned_countries, map)
+        print('POSSIBLE MOVE COUNT = ' +str(len(possible_moves)))
+        print('overwhelming_move MOVE COUNT = ' + str(len(self.overwhelming_move)))
 
-                """If it is possible to prevent negative actions from countries in the critical list, 
-                then do this. prioritise based on whether friendlies own the entire region, and then
-                on the value of the region"""
+        while len(possible_moves) > 0 and len(self.overwhelming_move) > 0:
+            print('overwhelming moves = ' + str(self.overwhelming_move))
+            possible_moves = self.get_possible_moves(current_owned_countries, map)
+            move = self.overwhelming_move[0]
+            self.overwhelming_move.remove(move)
+            self.remove_used_armies_from_pool(current_owned_countries, move)
+            chosen_moves.append(move)
 
-                """If there are armies left after dealing with priority and critical lists, or if they 
-                were both empty..."""
+        print('heuristic chosen moves after = ' + str(chosen_moves))
+        print('heuristic owned countries after = ' + str(owned_countries))
 
-                """if a neighbouring country has 0 armies and if there is an available army nearby, 
-                                    send 1 army over to take that country"""
-
-                """Look at owned countries, and identify the closest attainable entire territory, and 
-                make moves to obtain it"""
+        """Reset known info, will be reconstructed next turn"""
+        self.overwhelming_move.clear()
+        self.enemy_countries.clear()
+        self.empty_countries.clear()
+        self.defend_value_map = dict.fromkeys(self.defend_value_map, 0)
 
         return chosen_moves, reinf_cards_played, owned_countries
 
 
     def allocate_armies(self, additional_armies, owned_countries, map):
         """Takes in a number of armies to be allocated, works out which countries most
-                 need additional armies. Then allocates armies based on a probability distribution,
-                 where countries that need armies are more likely to get given them. Then returns
-                 the owned_countries dict"""
+         need additional armies. Then allocates armies based on a probability distribution,
+         where countries that need armies are more likely to get given them. Then returns
+         the owned_countries dict"""
 
-        current_owned_countries = deepcopy(owned_countries)
+        current_owned_countries = owned_countries
         neighbouring_countries = []
         placement_probability_dict = owned_countries
 
         """set initial probabilities to 0"""
-        for key, value in placement_probability_dict.items():
-            placement_probability_dict[str(key)] = 0
+        placement_probability_dict = dict.fromkeys(placement_probability_dict, 0)
 
         """For each country, work out how many armies to give it"""
         for country in list(current_owned_countries.keys()):
             neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
+
+            print('COUNTRY: ' + str(country) + ', has neighbours: ' + str(neighbouring_countries))
 
             """check if any neighbouring countries have opponent armies"""
             for neighbouring_country in neighbouring_countries[0]:
@@ -214,16 +226,16 @@ class Heuristic_agent:
                 if map.get_colours_dict()[str(neighbouring_country)] != str(self.colour):
                     """If neighbouring country isn't owned by anyone, just add 1"""
                     if map.get_colours_dict()[str(neighbouring_country)] == 'b':
-                        placement_probability_dict[str(country)] += 1
+                        placement_probability_dict[str(country)] += 2
                     else:
                         """If country already has an overwhelming number of armies, dont bother adding more, save 
                         them for some other country"""
-                        if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) >= map.get_armies_dict()[
-                            str(country)]:
+                        if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) <= map.get_armies_dict()[str(country)]:
                             placement_probability_dict[str(country)] += 1
                         else:
                             """Add probability based on how many armies are in that neighbouring country"""
-                            placement_probability_dict[str(country)] += map.get_armies_dict()[str(neighbouring_country)]
+                            placement_probability_dict[str(country)] += 4
+            neighbouring_countries = []
 
         """Allocate the armies based on the collected probability distribution"""
 
@@ -244,12 +256,11 @@ class Heuristic_agent:
                                           weights=probability_distribution,
                                           k=additional_armies)
 
-
         """Allocate the chosen countries"""
         for country in chosen_countries:
-            current_owned_countries[str(country)] += 1
+            owned_countries[str(country)] += 1
 
-        return current_owned_countries
+        return owned_countries
 
     def consider_reinf_card(self, reinf_card_count):
         """Heuristic agent always plays all reinforcement card immediately"""
