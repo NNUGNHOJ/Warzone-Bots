@@ -78,6 +78,7 @@ class Game:
 
         if str(colour) == 'b':
             print('player 1 about to make a move')
+            print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
             attacking_player = self.player1
             """If destination_country isn't owned by either player"""
             if self.map_graph.get_colours_dict()[str(move[1])] == 'k':
