@@ -178,6 +178,21 @@ class Game:
 
         return
 
+    def owns_entire_region(self, player, region):
+        """Checks a player's owned countries to see if it owns an entire region"""
+        region_countries = self.map_graph.regions_dict[str(region)]
+        total = 0
+        """For all the countries the player owns"""
+        for player_owned_country in player.get_owned_countries().keys():
+            """If that country is in the region being inspected"""
+            if str(player_owned_country) in region_countries:
+                total += 1
+        """If all countries are owned"""
+        if total == len(region_countries):
+            return True
+        return False
+
+
     def total_armies_to_allocate(self, player):
         """Works out how many armies a player has to allocate in this turn. This
         includes playing reinforcements cards, or owning entire regions. Each turn
@@ -192,21 +207,11 @@ class Game:
         player.set_reinf_card_count(player.get_reinf_card_count() - reinf_cards_played)
         total_armies += reinf_cards_played * 4
 
-        region_dict = self.map_graph.regions_dict
-        countries_owned_by_player = player.get_owned_countries()
-
         """Check if player owns any entire regions, allocate extra armies if they do"""
-        for region in region_dict.keys():
-            total_countries_in_region = len(region)
-            player_countries_count_in_region = 0
-            for country in region:
-                if str(country) in countries_owned_by_player.keys():
-                    player_countries_count_in_region += 1
+        for region in self.map_graph.regions_dict.keys():
             """If the player owns all the countries in a region, they get a bonus"""
-            if player_countries_count_in_region == total_countries_in_region:
-                regions_bonus_dict = self.map_graph.get_bonus_dict()
-                bonus = regions_bonus_dict[str(region)]
-                total_armies += bonus
+            if self.owns_entire_region(player, region):
+                total_armies += self.map_graph.get_bonus_dict()[str(region)]
 
         return total_armies
 
@@ -292,6 +297,10 @@ class Game:
             return True
 
         if len(self.player2.get_owned_countries()) == 0:
+            return True
+
+        """If difference in countries owned is more than 30"""
+        if abs(len(self.player1.get_owned_countries()) - len(self.player2.get_owned_countries())) > 30:
             return True
 
         return False

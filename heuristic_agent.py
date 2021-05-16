@@ -237,8 +237,12 @@ class Heuristic_agent:
             total += item
 
         for key, item in placement_probability_dict.items():
-            placement_probability_dict[str(key)] = item / total
-            probability_distribution.append(item / total)
+            if total > 0:
+                placement_probability_dict[str(key)] = item / total
+                probability_distribution.append(item / total)
+            else:
+                print('total is 0')
+                break
 
         """Choose countries 'randomly' but weighted based on probability distribution"""
         chosen_countries = random.choices(population=list_of_candidates,

@@ -75,7 +75,7 @@ def game_based_on_win_criteria(player1, player2, print_map, print_graph):
 
     while not game_over:
         #check if the game is over
-        test_game.check_game_over()
+        game_over = test_game.check_game_over()
         # has the players each choose the set of moves they want to make
         test_game.get_moves()
         # perform the array of moves in alternating order
@@ -139,7 +139,8 @@ def RHEA_testing():
 
 
 def map_state_testing():
-    game_based_on_number_of_rounds('Heuristic', 'Random', 50, True, False)
+    game_based_on_win_criteria('Heuristic', 'Random', True, False)
+    #game_based_on_number_of_rounds('Heuristic', 'Random', 60, True, False)
     return
 
 
