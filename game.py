@@ -128,6 +128,7 @@ class Game:
         to be adjusted"""
         if defending_player:
             defending_player_owned_countries = defending_player.get_owned_countries()
+            print("Defending player ", defending_player.colour, "has armies", defending_player_owned_countries)
             defending_player_armies = defending_player_owned_countries[str(move[1])]
         else:
             """If the country isn't owned by anyone, it has 2 armies"""

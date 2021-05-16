@@ -12,11 +12,11 @@ class RHEA_agent:
     def __init__(self, colour):
         self.colour = colour
         self.indivdualSize = 10
-        self.populationSize = 10
+        self.populationSize = 1
         self.numGenerations = 10
         self.numParents = 2
         self.mutationLen = 1
-        self.elite = 3
+        self.elite = 1 #don't forget to change to three
         self.tournament_size = 5
         self.maxMoves = 3
         self.actions = None
@@ -51,7 +51,6 @@ class RHEA_agent:
     def performAction(self, action, owned_countries, map, state):
         """Takes a single move and performs it on the map graph, a move consists
                 of (origin_country, destination_country, armies_to_move)"""
-
         if self.colour == 'b':
             attacking_player_colour = 'b'
             """If destination_country isn't owned by either player"""
@@ -279,7 +278,7 @@ class RHEA_agent:
         # score for additional armies
         add_score = self.score_additional_armies(owned_countries)
 
-        return fitness + (5 * add_score) + (percentage_dominating*100)
+        return (10*fitness) + (5 * add_score) + (percentage_dominating*100)
 
 
     def evaluateAction(self, action, map, owned_countries):
@@ -411,7 +410,10 @@ class RHEA_agent:
 
     def choose_moves(self, map, colour, owned_countries, reinf_card_count):
         print("rhea agent is: ", colour)
-        self.map = map
+       # print("CHOOSE MOVES COLOUR DIC BEFORE", map.get_colours_dict())
+        map2 = deepcopy(map)
+        self.map = deepcopy(map2)
+        owned_countries2 = deepcopy(owned_countries)
         t0 = time.clock()
         print(str(self.colour) + ' owns these countries: ' + str(owned_countries))
         #begin here
@@ -425,21 +427,21 @@ class RHEA_agent:
         time_elapsed = 0
         time_per_move = 0
         max_time = 20
-        self.actions = self.get_possible_moves(owned_countries, map)
-        state = owned_countries
+        self.actions = self.get_possible_moves(owned_countries2, self.map)
+        state = owned_countries2
 
         # initialize population
         for i in range(self.populationSize):
-            population.append(self.OneSLA(map, owned_countries))
-            population_scores.append(self.evaluateIndividual(population[i], map, owned_countries))
+            population.append(self.OneSLA(map, owned_countries2))
+            population_scores.append(self.evaluateIndividual(population[i], map,owned_countries2))
 
-        while new_score > old_score and moves <= self.maxMoves and ((max_time - time_elapsed) > time_per_move):
-            self.actions = self.get_possible_moves(owned_countries, map)
+        while (new_score > old_score) and (moves <= self.maxMoves):
+            self.actions = self.get_possible_moves(owned_countries2, map)
             moves += 1
             old_score = new_score
             # while time not elapsed:
             for j in range(10):
-                population, population_scores = self.runIteration(population, population_scores, map, owned_countries)
+                population, population_scores = self.runIteration(population, population_scores, map, owned_countries2)
                 # sort on decreasing value
                 population = [x for _, x in sorted(zip(population_scores, population), reverse=True)]
                 population_scores.sort(reverse=True)
@@ -447,12 +449,12 @@ class RHEA_agent:
             # return best action, reinf_cards_played, owned_countries
             best_inidvidual = population[0]
             new_score = population_scores[0]
-            if best_inidvidual[0] not in self.get_possible_moves(owned_countries, map):
+            if best_inidvidual[0] not in self.get_possible_moves(owned_countries2, map):
                 continue
 
             # print('BEST ACTION', best_inidvidual[0])
             all_moves.append(best_inidvidual[0])
-            self.performAction(best_inidvidual[0], owned_countries, map, owned_countries)
+            self.performAction(best_inidvidual[0], owned_countries2, map, owned_countries2)
 
             # updated time
             time_elapsed = time.clock() - t0
@@ -460,6 +462,7 @@ class RHEA_agent:
 
         print(str(self.colour) + ' does these moves: ' + str(all_moves))
         print(str(self.colour) + ' has these countries: ' + str(owned_countries))
+        #print("CHOOSE MOVES COLOUR DIC AFTER", map.get_colours_dict())
         return all_moves, reinf_cards_played, owned_countries
 
     def consider_reinf_card(self, reinf_card_count):
@@ -518,7 +521,7 @@ class RHEA_agent:
                  need additional armies. Then allocates armies based on a probability distribution,
                  where countries that need armies are more likely to get given them. Then returns
                  the owned_countries dict"""
-
+        print("ALLOCATING ARMIES COLOUR DIC BEFORE", map.get_colours_dict())
         current_owned_countries = deepcopy(owned_countries)
         neighbouring_countries = []
         placement_probability_dict = owned_countries
@@ -572,4 +575,6 @@ class RHEA_agent:
         for country in chosen_countries:
             current_owned_countries[str(country)] += 1
 
+        print("AFTER ALLOCATING RHEA now has these countries:", current_owned_countries)
+        print("ALLOCATING ARMIES COLOUR DIC BEFORE", map.get_colours_dict())
         return current_owned_countries
