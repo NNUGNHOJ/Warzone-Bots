@@ -65,7 +65,6 @@ class Controller:
 
     def choose_moves(self, map):
         """Takes in a game state and chooses moves to make."""
-        print('Using the choose_moves() function.....')
         owned_countries_copy = self.owned_countries.copy()
         chosen_moves, reinf_cards_played, owned_countries = self.algorithm.choose_moves(map, self.colour,
                                                                   owned_countries_copy, self.reinf_card_count)

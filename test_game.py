@@ -22,7 +22,6 @@ def print_stats(results):
     player_1_countries_owned = player1_countries[len(player1_countries) - 1]
     player_2_countries_owned = player2_countries[len(player2_countries) - 1]
 
-
     plt.plot(index, player1_countries, label="Player 1")
     plt.plot(index, player2_countries, label="Player 2")
     plt.xlabel('Turn')
@@ -32,7 +31,6 @@ def print_stats(results):
     plt.show()
 
     return player_1_countries_owned, player_2_countries_owned
-
 
 
 def game_based_on_number_of_rounds(player1, player2, number_of_rounds, print_map, print_graph):
@@ -64,7 +62,6 @@ def game_based_on_number_of_rounds(player1, player2, number_of_rounds, print_map
     return results, test_game
 
 
-
 def game_based_on_win_criteria(player1, player2, print_map, print_graph):
     # create a game two Random players
     test_game = game.Game(str(player1), str(player2))
@@ -94,53 +91,59 @@ def game_based_on_win_criteria(player1, player2, print_map, print_graph):
     if print_graph:
         print_stats(results)
 
-#For now because of optimization we might need to limit it to a number of turn so
-#i'm using the game based on number of rounds function
-NUM_GAMES = 1
-specifications = "RHEA_HEURISTICS_POPULATION_SIZE=1" #adjust this
-filename = "Results_" + specifications + ".txt"
-f = open(filename, "w")
-for i in range(NUM_GAMES):
-    f.write("Game: " + str(i) + "\n")
-    f.write("Player 1: Heuristic, Player 2: Rhea" + "\n")
-    results, test_game = game_based_on_number_of_rounds('rhea', 'Random', 30, False, True)
 
-    #number of countries owned
-    player_1_countries_owned = results[0]
-    player_2_countries_owned = results[1]
-    f.write("Number of countries owned by player 1: " + str(player_1_countries_owned) + "\n")
-    f.write("Number of countries owned by player 2: " + str(player_2_countries_owned) + "\n")
+def RHEA_testing():
+    #For now because of optimization we might need to limit it to a number of turn so
+    #i'm using the game based on number of rounds function
+    NUM_GAMES = 1
+    specifications = "RHEA_HEURISTICS_POPULATION_SIZE=1" #adjust this
+    filename = "Results_" + specifications + ".txt"
+    f = open(filename, "w")
+    for i in range(NUM_GAMES):
+        f.write("Game: " + str(i) + "\n")
+        f.write("Player 1: Heuristic, Player 2: Rhea" + "\n")
+        results, test_game = game_based_on_number_of_rounds('rhea', 'Random', 30, False, True)
 
-    #% land owned
-    countries = test_game.map_graph.get_colours_dict()
-    total_countries = len(countries.keys())
-    percentage_p1 = player_1_countries_owned / total_countries
-    percentage_p2 = player_2_countries_owned / total_countries
+        #number of countries owned
+        player_1_countries_owned = results[0]
+        player_2_countries_owned = results[1]
+        f.write("Number of countries owned by player 1: " + str(player_1_countries_owned) + "\n")
+        f.write("Number of countries owned by player 2: " + str(player_2_countries_owned) + "\n")
 
-    f.write("% land owned by player 1: " + str(percentage_p1 * 100) + "\n")
-    f.write("% land owned by player 2: " + str(percentage_p2 * 100) + "\n")
+        #% land owned
+        countries = test_game.map_graph.get_colours_dict()
+        total_countries = len(countries.keys())
+        percentage_p1 = player_1_countries_owned / total_countries
+        percentage_p2 = player_2_countries_owned / total_countries
 
-    #size of army versus opposing army
-    armies_p1 = 0
-    armies_p2 = 0
-    armies = test_game.map_graph.get_armies_dict()
-    print(countries)
-    print(armies)
-    for country in countries.keys():
-        if countries[str(country)] == 'r':
-            armies_p1 += armies[str(country)]
-        elif countries[str(country)] == 'b':
-            armies_p2 += armies[str(country)]
+        f.write("% land owned by player 1: " + str(percentage_p1 * 100) + "\n")
+        f.write("% land owned by player 2: " + str(percentage_p2 * 100) + "\n")
 
-    f.write("Number of armies owned by player 1: " + str(armies_p1) + "\n")
-    f.write("Number of armies owned by player 2: " + str(armies_p2) + "\n")
+        #size of army versus opposing army
+        armies_p1 = 0
+        armies_p2 = 0
+        armies = test_game.map_graph.get_armies_dict()
+        print(countries)
+        print(armies)
+        for country in countries.keys():
+            if countries[str(country)] == 'r':
+                armies_p1 += armies[str(country)]
+            elif countries[str(country)] == 'b':
+                armies_p2 += armies[str(country)]
+
+        f.write("Number of armies owned by player 1: " + str(armies_p1) + "\n")
+        f.write("Number of armies owned by player 2: " + str(armies_p2) + "\n")
+
+    f.close()
+    return
 
 
-f.close()
+def map_state_testing():
+    game_based_on_number_of_rounds('Heuristic', 'Random', 50, True, False)
+    return
 
 
-
-
+map_state_testing()
 
 
 

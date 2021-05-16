@@ -61,14 +61,10 @@ class Random_agent:
     def allocate_armies(self, additional_armies, owned_countries, map):
         """Takes in a number of armies to be allocated, and randomly allocates
         them to countries. The returns the owned_countries dict"""
-        print(str(self.colour) + ' owns these countries: ' + str(owned_countries))
         while additional_armies > 0:
             country = random.choice(list(owned_countries.keys()))
-            print('Algorithm has chosen ' + str(country) + ' to be allocated an army')
             owned_countries[str(country)] += 1
             additional_armies -= 1
-
-        print('after allocating, ' + str(self.colour) + ' owns these countries: ' + str(owned_countries))
 
         return owned_countries
 

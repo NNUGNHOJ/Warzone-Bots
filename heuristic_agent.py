@@ -143,7 +143,6 @@ class Heuristic_agent:
                             if (map.get_armies_dict()[str(neighbouring_country)] * 1.5) < map.get_armies_dict()[str(country)]:
                                 self.overwhelming_move.append((str(country), str(neighbouring_country),
                                                                round(map.get_armies_dict()[str(neighbouring_country)] * 1.5)))
-                                print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' + str(self.overwhelming_move))
 
                     """Check if neighbouring country has 0 armies"""
                     if map.get_armies_dict()[str(neighbouring_country)] == 0:
@@ -175,22 +174,14 @@ class Heuristic_agent:
                 self.remove_used_armies_from_pool(current_owned_countries, move)
                 self.empty_countries.remove(empty_country_moves)
 
-        print('heuristic chosen moves before = ' + str(chosen_moves))
-        print('heuristic owned countries before = ' + str(owned_countries))
         possible_moves = self.get_possible_moves(current_owned_countries, map)
-        print('POSSIBLE MOVE COUNT = ' +str(len(possible_moves)))
-        print('overwhelming_move MOVE COUNT = ' + str(len(self.overwhelming_move)))
 
         while len(possible_moves) > 0 and len(self.overwhelming_move) > 0:
-            print('overwhelming moves = ' + str(self.overwhelming_move))
             possible_moves = self.get_possible_moves(current_owned_countries, map)
             move = self.overwhelming_move[0]
             self.overwhelming_move.remove(move)
             self.remove_used_armies_from_pool(current_owned_countries, move)
             chosen_moves.append(move)
-
-        print('heuristic chosen moves after = ' + str(chosen_moves))
-        print('heuristic owned countries after = ' + str(owned_countries))
 
         """Reset known info, will be reconstructed next turn"""
         self.overwhelming_move.clear()
@@ -217,8 +208,6 @@ class Heuristic_agent:
         """For each country, work out how many armies to give it"""
         for country in list(current_owned_countries.keys()):
             neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
-
-            print('COUNTRY: ' + str(country) + ', has neighbours: ' + str(neighbouring_countries))
 
             """check if any neighbouring countries have opponent armies"""
             for neighbouring_country in neighbouring_countries[0]:

@@ -77,8 +77,6 @@ class Game:
         of (origin_country, destination_country, armies_to_move)"""
 
         if str(colour) == 'b':
-            print('player 1 about to make a move')
-            print('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH')
             attacking_player = self.player1
             """If destination_country isn't owned by either player"""
             if self.map_graph.get_colours_dict()[str(move[1])] == 'k':
@@ -87,7 +85,6 @@ class Game:
                 defending_player = self.player2
 
         else:
-            print('player 2 about to make a move')
             attacking_player = self.player2
             """destination_country isn't owned by either player"""
             if self.map_graph.get_colours_dict()[str(move[1])] == 'k':
@@ -120,7 +117,6 @@ class Game:
             self.map_graph.set_army_count(str(move[1]), (destination_army_count + attacking_player_armies))
             attacking_player.add_owned_country(str(move[0]), (origin_army_count - attacking_player_armies))
             attacking_player.add_owned_country(str(move[1]), (destination_army_count + attacking_player_armies))
-            print(str(attacking_player.get_colour()) + ' was attacking own country, transfer made...')
             return
 
         """Check if defending country is a player, and not a black node, if it
@@ -128,7 +124,6 @@ class Game:
         to be adjusted"""
         if defending_player:
             defending_player_owned_countries = defending_player.get_owned_countries()
-            print("Defending player ", defending_player.colour, "has armies", defending_player_owned_countries)
             defending_player_armies = defending_player_owned_countries[str(move[1])]
         else:
             """If the country isn't owned by anyone, it has 2 armies"""
@@ -138,7 +133,6 @@ class Game:
         for i in range(int(attacking_player_armies)):
             """If there are still defending armies in destination_country"""
             if self.map_graph.get_armies_dict()[str(move[1])] > 0:
-                print(str(attacking_player.get_colour()) + ' is attacking ' + str(move[1]))
                 defender_chance = random.randint(0, 100) # <= 70 means defender wins
                 attacker_chance = random.randint(0, 100) # <= 60 means attacker wins
 
@@ -147,28 +141,18 @@ class Game:
                 """If defender successfully rolls but attacker doesnt, kill one
                 attacking army, defending army stays the same"""
                 if defender_chance <= 70 and attacker_chance > 60:
-                    print(str(attacking_player.get_colour()) + ' just lost an army in ' + str(move[0]) + ' while attacking')
-                    print('it started with: ' + str(attacking_player.get_owned_countries()))
-
                     new_value = attacking_player.get_owned_countries()[str(move[0])] - 1
                     attacking_player_armies -= 1 #may be able to remove this line entirely
                     attacking_player.add_owned_country(str(move[0]), new_value)
                     self.map_graph.set_army_count(str(move[0]), new_value)
-                    print('its total armies is now: ' + str(attacking_player.get_owned_countries()))
-
 
                 """If attacking army successfully rolls but defender doesnt, kill one
                 defending army, attacking army stays the same"""
                 if defender_chance > 70 and attacker_chance <= 60:
                     if defending_player:
-                        print(str(defending_player.get_colour()) + ' just lost an army in ' + str(move[1]))
-                        print('it started with: ' + str(defending_player.get_owned_countries()))
-
                         new_value = self.map_graph.get_armies_dict()[str(move[1])] - 1
-
                         defending_player.add_owned_country(move[1], new_value)
                         self.map_graph.set_army_count(str(move[1]), new_value)
-                        print('its total armies is now: ' + str(defending_player.get_owned_countries()))
 
                     else:
                         """No one owns the defending country, so just remove one army in the map object"""
@@ -181,11 +165,9 @@ class Game:
                 attacking_player.add_owned_country(move[1], attacking_player_armies)
                 self.map_graph.set_army_count(str(move[1]), attacking_player_armies)
                 self.map_graph.change_colour(str(move[1]), str(attacking_player.get_colour()))
-                print(str(attacking_player.get_colour()) + ' has invaded ' + str(move[1]))
 
                 """If destination_country is owned by the opposing player"""
                 if defending_player:
-                    print(str(defending_player.get_colour()) + ' just lost ' + str(move[1]))
                     defending_player.remove_owned_country(move[1])
                 else:
                     print(str(move[1]) + ' was not yet owned by anyone')
