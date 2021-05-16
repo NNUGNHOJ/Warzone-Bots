@@ -95,7 +95,6 @@ class Game:
         """Check that the player still owns the origin_country, if it does not, 
         then return without making the move."""
         if self.map_graph.get_colours_dict()[str(move[0])] != str(colour):
-            print('Player making move does not own the destination country...')
             return
 
         """Check if the origin country still has all the armies the move wants to
@@ -166,11 +165,10 @@ class Game:
                 self.map_graph.set_army_count(str(move[1]), attacking_player_armies)
                 self.map_graph.change_colour(str(move[1]), str(attacking_player.get_colour()))
 
-                """If destination_country is owned by the opposing player"""
+                """If destination_country is owned by the opposing player, remove from their
+                owned_countries"""
                 if defending_player:
                     defending_player.remove_owned_country(move[1])
-                else:
-                    print(str(move[1]) + ' was not yet owned by anyone')
 
             if defending_player_armies < 0:
                 print('Army count has gone below 0...')

@@ -17,12 +17,22 @@ class Controller:
 
         if algorithm == 'Random':
             self.algorithm = random_agent.Random_agent(colour)
+            print('identified a random agent')
+            return
+
         if algorithm == 'Heuristic':
             self.algorithm = heuristic_agent.Heuristic_agent(colour)
+            print('identified a heuristic agent')
+            return
+
         if algorithm == 'rhea':
+            print('identified a RHEA agent')
             self.algorithm = rhea_agent.RHEA_agent(colour)
+            return
+
         else:
             print("Only Random and Heuristic agents have been implemented so far...")
+            return
 
     def get_colour(self):
         return self.colour
