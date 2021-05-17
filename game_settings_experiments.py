@@ -46,6 +46,7 @@ def game_based_on_number_of_rounds(player1, player2, number_of_rounds, print_map
     for i in range(number_of_rounds):
         #has the players each choose the set of moves they want to make
         test_game.get_moves()
+        test_game.print_map()
         #perform the array of moves in alternating order
         test_game.perform_moves_in_order()
         #append the map at the end of the turn to an array
