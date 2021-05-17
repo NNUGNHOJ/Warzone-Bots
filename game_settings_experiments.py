@@ -46,6 +46,7 @@ def game_based_on_number_of_rounds(player1, player2, number_of_rounds, print_map
     for i in range(number_of_rounds):
         #has the players each choose the set of moves they want to make
         test_game.get_moves()
+        test_game.print_map()
         #perform the array of moves in alternating order
         test_game.perform_moves_in_order()
         #append the map at the end of the turn to an array
@@ -102,12 +103,16 @@ def map_state_testing():
     experiment_type = "H_R_ORIGINAL_MAP"
     filename = "Results_" + experiment_type + ".txt"
     f = open(filename, "w")
+    turns = None
 
     for i in range(number_of_games):
         f.write("Game: " + str(i) + "\n")
         f.write("Player 1: Heuristic, Player 2: Rhea" + "\n")
-        #results, test_game, turns = game_based_on_number_of_rounds('Heuristic', 'Random', 30, True, False)
-        results, test_game, turns = game_based_on_win_criteria('Heuristic', 'Random', True, False)
+        results, test_game = game_based_on_number_of_rounds('Heuristic', 'Random', 25, True, False)
+        #results, test_game, turns = game_based_on_win_criteria('Heuristic', 'Random', True, False)
+        if not turns:
+            turns = 25
+
         f.write("Total turns: " + str(turns) + "\n")
 
         #number of countries owned
