@@ -143,9 +143,8 @@ def create_graph(print):
     G.add_node('Western Australia', region='Oceania', pos=(14.4, 2.7))
 
     G.add_edge('Indonesia', 'Siam')
-    G.add_edge('New Guinea', 'Siam')
     G.add_edge('New Guinea', 'Indonesia')
-    G.add_edge('Western Australia', 'Siam')
+    G.add_edge('Western Australia', 'Indonesia')
     G.add_edge('New Guinea', 'Western Australia')
     G.add_edge('New Guinea', 'Eastern Australia')
     G.add_edge('Western Australia', 'Eastern Australia')
