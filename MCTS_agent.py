@@ -8,8 +8,8 @@ Created on Sat May  1 17:45:44 2021
 
 from copy import deepcopy 
 import random
-import test_game
 import math 
+import game 
 import numpy as np 
 
 
@@ -185,7 +185,7 @@ class TreeNode:
             
     def TreePolicy(self, state, map): 
         current = self 
-        while ( not test_game.check_game_over() and current.n_depth < self.rollout_depth) :
+        while ( not game.Game('Heuristic','MCTS').check_game_over() and current.n_depth < self.rollout_depth) :
             if current.not_fully_expanded():
                 
                 current, state, map = current.expand(state, map)
@@ -260,7 +260,7 @@ class TreeNode:
         
 
     def valueState(self, state, map, current_state): 
-        gameOver = test_game.check_game_over()
+        gameOver = game.Game('Heuristic','MCTS').check_game_over()
         winner = False 
         loser = False 
         score = 0 
@@ -310,7 +310,7 @@ class TreeNode:
     def finish_rollout(self, depth):
         if depth >= self.rollout_depth: 
             return True 
-        elif test_game.check_game_over():
+        elif game.Game('Heuristic','MCTS').check_game_over():
             return True 
         else:
             return False 
