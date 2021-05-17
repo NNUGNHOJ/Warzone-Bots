@@ -300,7 +300,7 @@ class Game:
             return True
 
         """If difference in countries owned is more than 30"""
-        if abs(len(self.player1.get_owned_countries()) - len(self.player2.get_owned_countries())) > 30:
+        if abs(len(self.player1.get_owned_countries()) - len(self.player2.get_owned_countries())) > 35:
             return True
 
         return False

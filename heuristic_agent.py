@@ -223,7 +223,7 @@ class Heuristic_agent:
                             placement_probability_dict[str(country)] += 1
                         else:
                             """Add probability based on how many armies are in that neighbouring country"""
-                            placement_probability_dict[str(country)] += 4
+                            placement_probability_dict[str(country)] += 10
             neighbouring_countries = []
 
         """Allocate the armies based on the collected probability distribution"""
