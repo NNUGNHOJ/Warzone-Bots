@@ -102,12 +102,16 @@ def map_state_testing():
     experiment_type = "H_R_ORIGINAL_MAP"
     filename = "Results_" + experiment_type + ".txt"
     f = open(filename, "w")
+    turns = None
 
     for i in range(number_of_games):
         f.write("Game: " + str(i) + "\n")
         f.write("Player 1: Heuristic, Player 2: Rhea" + "\n")
-        #results, test_game, turns = game_based_on_number_of_rounds('Heuristic', 'Random', 30, True, False)
-        results, test_game, turns = game_based_on_win_criteria('Heuristic', 'Random', True, False)
+        results, test_game = game_based_on_number_of_rounds('Heuristic', 'Random', 25, True, False)
+        #results, test_game, turns = game_based_on_win_criteria('Heuristic', 'Random', True, False)
+        if not turns:
+            turns = 25
+
         f.write("Total turns: " + str(turns) + "\n")
 
         #number of countries owned
