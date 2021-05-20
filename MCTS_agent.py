@@ -11,6 +11,7 @@ import random
 import math 
 import game 
 import numpy as np 
+import time
 
 
 class MCTS_agent:
@@ -33,11 +34,12 @@ class MCTS_agent:
             reinf_cards_played = 0
         
         chosen_actions=[]
-        i=0
+        """Each country in the agent's dict is taken, and the three best moves are chosen"""
+        
         for country in list(current_owned_countries.keys()):
-#             i=0
    
            for i in range(3):
+                
                 actions = self.get_possible_moves(current_owned_countries, map_copy,country,chosen_actions)
 
 
@@ -57,6 +59,10 @@ class MCTS_agent:
         return reinf_card_count
     
     def get_possible_moves(self,owned_countries,map,country,chosen_actions):
+        """For each country that we're searching for, we consider all the neighbouring countries and the number of armies to be placed there when 
+        the attack is performed.
+        If the agent has chosen to attack a country, then this country is removed from the possible moves list.
+        """
         
         current_neighbours = [n for n in map.map_graph.neighbors(country)]
         for chosen in chosen_actions:
@@ -88,8 +94,6 @@ class MCTS_agent:
         for country in list(current_owned_countries.keys()):
             neighbouring_countries.append([n for n in map.map_graph.neighbors(country)])
 
-            print('COUNTRY: ' + str(country) + ', has neighbours: ' + str(neighbouring_countries))
-
             """check if any neighbouring countries have opponent armies"""
             for neighbouring_country in neighbouring_countries[0]:
                 """If neighbour colour not the same as player colour"""
@@ -104,7 +108,7 @@ class MCTS_agent:
                             placement_probability_dict[str(country)] += 1
                         else:
                             """Add probability based on how many armies are in that neighbouring country"""
-                            placement_probability_dict[str(country)] += 4
+                            placement_probability_dict[str(country)] += 10
             neighbouring_countries = []
 
         """Allocate the armies based on the collected probability distribution"""
@@ -118,8 +122,12 @@ class MCTS_agent:
             total += item
 
         for key, item in placement_probability_dict.items():
-            placement_probability_dict[str(key)] = item / total
-            probability_distribution.append(item / total)
+            if total > 0:
+                placement_probability_dict[str(key)] = item / total
+                probability_distribution.append(item / total)
+            else:
+                print('total is 0')
+                break
 
         """Choose countries 'randomly' but weighted based on probability distribution"""
         chosen_countries = random.choices(population=list_of_candidates,
@@ -155,8 +163,6 @@ class TreeNode:
     def __init__(self,colour, actions, n_actions, parent = None,childIdx=-1): 
         self.colour=colour
         self.parent = parent 
-#         self.state=state
-#         self.map=map
         self.n_actions = n_actions
         self.actions = actions 
         self.children = [None for i in range(self.n_actions)]
@@ -175,9 +181,14 @@ class TreeNode:
         
     
     def selection(self, max_iterations, current_state, map_copy):
-        for i in range(max_iterations):
-            state = deepcopy(current_state)
-            map = deepcopy(map_copy)
+        """Algorithm searches all the game tree, selects the best action and evaluates it"""
+        start_time = time.time()
+        seconds=8
+        state = deepcopy(current_state)
+        map = deepcopy(map_copy)
+        while time.time()<(seconds+start_time):
+          
+            
             selected, state, map = self.TreePolicy(state, map)
             delta, state, map = selected.rollout(state, map, current_state) 
           
@@ -206,16 +217,18 @@ class TreeNode:
             if x > best_value and self.children[i] == None : 
                 best_action = i
                 best_value = x
-      
+       
+        """Update the state and the map to depict the best action chosen """
         state, map = self.make_move(best_action, state, map)
         state = self.remove_used_armies_from_pool(best_action, state, map)
 
-        
+        """creates the subtree which has as root the best action"""
         tn=TreeNode(colour=self.colour,childIdx=best_action,n_actions=self.n_actions, actions=self.actions)
         self.children[best_action]=TreeNode(colour=self.colour,childIdx=best_action,n_actions=self.n_actions, actions=self.actions,parent=self)
         return tn, state, map
     
     def UCT(self, state, map):
+        """"Calculation of each child's value, and selection of the one with the highest UCT value"""
         selected = None
         best_value = - np.inf
         for child in self.children:
@@ -224,6 +237,7 @@ class TreeNode:
             childValue = hv_val / (child.n_visits + self.epsilon)
             childValue = child.normalise(childValue, self.lower_bound, self.upper_bound)
             UCT = childValue + self.K * math.sqrt(np.log(self.n_visits+1) / (child.n_visits + self.epsilon))
+            """we added some noise in case the algorithm has randomly chosen an action"""
             UCT= (UCT + self.epsilon) *(1.0 +self.epsilon *(random.random()-0.5))
             
             
@@ -260,6 +274,7 @@ class TreeNode:
         
 
     def valueState(self, state, map, current_state): 
+        """evaluation function based on the game rules"""
         gameOver = game.Game('Heuristic','MCTS').check_game_over()
         winner = False 
         loser = False 
@@ -340,6 +355,8 @@ class TreeNode:
                 elif(first != self.children[i].n_visits):
                     all_equal = False 
                 childValue = self.children[i].n_visits
+                """we added some noise in case the algorithm has randomly chosen an action"""
+
                 childValue= (childValue + self.epsilon) *(1.0 +self.epsilon *(random.random()-0.5))
                 if childValue > best_value: 
                     best_value = childValue
@@ -358,6 +375,8 @@ class TreeNode:
         for i in range(len(self.children)):
             if self.children[i] != None: 
                 childValue = self.children[i].totalValue / (self.children[i].n_visits + self.epsilon) 
+                """we added some noise in case the algorithm has randomly chosen an action"""
+
                 childValue= (childValue + self.epsilon) *(1.0 +self.epsilon *(random.random()-0.5))
                 
                 if childValue > best_value: 
